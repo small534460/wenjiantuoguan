@@ -105,7 +105,7 @@
       height: 100%;
       object-fit: cover;
       border-radius: 10px;
-      display: none; /* 默认隐藏，等待JS控制 */
+      display: none;
       position: absolute;
       top: 0;
       left: 0;
@@ -133,31 +133,6 @@
     
     .avatar-img.loaded + .avatar-fallback {
       display: none;
-    }
-    
-    /* 移动端调整 */
-    @media (max-width: 768px) {
-      .avatar {
-        width: 56px;
-        height: 56px;
-        flex: 0 0 56px;
-      }
-      
-      .avatar-fallback {
-        font-size: 18px;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .avatar {
-        width: 60px;
-        height: 60px;
-        flex: 0 0 60px;
-      }
-      
-      .avatar-fallback {
-        font-size: 20px;
-      }
     }
     
     .title-container {
@@ -219,7 +194,7 @@
       word-break: break-all;
     }
     
-    /* ================== 注释：锁定用户名和仓库名的样式 ================== */
+    /* 注释：锁定用户名和仓库名的样式 */
     .config-value .locked {
       padding: 6px 8px;
       border-radius: 4px;
@@ -661,7 +636,6 @@
     <header>
       <div class="avatar">
         <!-- ================== 注释：修改头像URL的地方 ================== -->
-        <!-- 在这里修改你的头像URL，已将下面的链接改为你提供的头像链接 -->
         <img class="avatar-img" src="https://i.mituw.com/imgs/2026/03/15/de4945abb96be550.jpg" alt="头像" />
         <div class="avatar-fallback">S3</div>
       </div>
@@ -678,7 +652,6 @@
           <div class="config-label">GitHub用户名</div>
           <div class="config-value">
             <!-- ================== 注释：显示锁定用户名的地方 ================== -->
-            <!-- 这里用户名锁定为 small534460，只显示不显示输入框 -->
             <div class="locked">small534460</div>
           </div>
         </div>
@@ -686,7 +659,6 @@
           <div class="config-label">仓库名称</div>
           <div class="config-value">
             <!-- ================== 注释：显示锁定仓库名的地方 ================== -->
-            <!-- 这里仓库名锁定为 wjcf，只显示不显示输入框 -->
             <div class="locked">wjcf</div>
           </div>
         </div>
@@ -874,7 +846,6 @@
     // ================== 文本编码修复函数 ==================
     function decodeBase64Content(base64Content) {
       try {
-        // 修复文本编码问题
         const binaryString = atob(base64Content);
         const bytes = new Uint8Array(binaryString.length);
         for (let i = 0; i < binaryString.length; i++) {
@@ -883,7 +854,6 @@
         return new TextDecoder('utf-8').decode(bytes);
       } catch (error) {
         try {
-          // 如果utf-8解码失败，尝试其他编码
           return atob(base64Content);
         } catch (e) {
           return "无法解码文件内容";
@@ -895,13 +865,9 @@
     function getFileIcon(filename) {
       const ext = filename.split('.').pop().toLowerCase();
       
-      // 图片文件
       const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'];
-      // 音乐文件
       const musicExts = ['mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac'];
-      // 压缩文件
       const archiveExts = ['zip', 'rar', '7z', 'tar', 'gz', 'bz2'];
-      // 文本/代码文件
       const textExts = ['txt', 'md', 'js', 'html', 'css', 'json', 'xml', 'yml', 'yaml', 'ini', 'log'];
       
       if (ext === '') return 'folder';
@@ -927,17 +893,16 @@
       const savedConfig = localStorage.getItem('githubFileManagerConfig');
       if (savedConfig) {
         const config = JSON.parse(savedConfig);
-        // 只加载访问令牌
         document.getElementById('token').value = config.token || '';
       }
     }
     
     // ================== GitHub API 函数 ==================
     async function githubApiRequest(endpoint, method = 'GET', data = null) {
-      const username = 'small534460'; // 锁定用户名
+      const username = 'small534460';
       const token = document.getElementById('token').value;
-      const repo = 'wjcf'; // 锁定仓库名
-      const branch = 'main'; // 锁定分支
+      const repo = 'wjcf';
+      const branch = 'main';
       
       if (!token) {
         alert('请先输入GitHub访问令牌！');
@@ -991,7 +956,6 @@
       fileList.innerHTML = '<div class="file-item" style="text-align: center; color: var(--muted);"><span>加载中...</span></div>';
       
       try {
-        // 获取仓库内容
         const endpoint = path ? `contents/${path}` : 'contents';
         const contents = await githubApiRequest(endpoint);
         
@@ -1000,10 +964,8 @@
           return;
         }
         
-        // 清空文件列表
         fileList.innerHTML = '';
         
-        // 添加返回上一级选项（如果不是根目录）
         if (path) {
           const parentItem = document.createElement('div');
           parentItem.className = 'file-item';
@@ -1018,7 +980,6 @@
           fileList.appendChild(parentItem);
         }
         
-        // 显示文件夹和文件
         contents.forEach(item => {
           const fileItem = document.createElement('div');
           fileItem.className = 'file-item';
@@ -1027,7 +988,6 @@
           const fileIconClass = `file-icon ${fileType}`;
           
           if (item.type === 'dir') {
-            // 文件夹
             fileItem.innerHTML = `
               <div class="${fileIconClass}"></div>
               <div class="file-name">${item.name}/</div>
@@ -1039,7 +999,6 @@
             `;
             fileItem.onclick = () => loadFiles(item.path);
           } else {
-            // 文件 - 根据文件类型显示不同的操作按钮
             const fileExt = item.name.split('.').pop().toLowerCase();
             const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'].includes(fileExt);
             const isMusic = ['mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac'].includes(fileExt);
@@ -1079,7 +1038,6 @@
               </div>
             `;
             
-            // 点击文件时的行为
             if (isText) {
               fileItem.onclick = () => editFile(item.path, item.name);
             } else if (isMusic || isImage) {
@@ -1114,13 +1072,12 @@
           const previewContent = document.getElementById('previewContent');
           
           if (type === 'image') {
-            // 图片预览
+            // 修复图片预览问题
             previewContent.innerHTML = `
-              <img src="${file.download_url}" alt="${name}" class="preview-image">
+              <img src="${file.download_url}" alt="${name}" class="preview-image" onerror="this.onerror=null;this.src='${file.download_url}'">
               <p style="text-align: center; margin-top: 10px; color: var(--muted);">${name}</p>
             `;
           } else if (type === 'music') {
-            // 音乐播放器
             previewContent.innerHTML = `
               <div class="audio-player">
                 <audio controls>
@@ -1131,7 +1088,6 @@
               </div>
             `;
           } else {
-            // 其他文件预览（文本等）
             const content = decodeBase64Content(file.content.replace(/\s/g, ''));
             previewContent.innerHTML = `
               <pre style="white-space: pre-wrap; word-break: break-all; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;">${content}</pre>
@@ -1159,7 +1115,6 @@
       try {
         const file = await githubApiRequest(`contents/${path}`);
         if (file && file.download_url) {
-          // 创建一个临时链接来下载文件
           const link = document.createElement('a');
           link.href = file.download_url;
           link.download = name;
@@ -1180,7 +1135,6 @@
       document.getElementById('previewSection').style.display = 'none';
       document.getElementById('fileContent').value = '';
       
-      // 加载文件内容
       loadFileContent(path, name);
     }
     
@@ -1188,7 +1142,6 @@
       try {
         const file = await githubApiRequest(`contents/${path}`);
         if (file && file.content) {
-          // 修复Base64解码文件内容
           const content = decodeBase64Content(file.content.replace(/\s/g, ''));
           document.getElementById('fileContent').value = content;
         }
@@ -1212,13 +1165,12 @@
       
       const content = document.getElementById('fileContent').value;
       
-      // 首先获取文件的SHA（用于更新）
       try {
         const fileInfo = await githubApiRequest(`contents/${currentFile}`);
         
         const data = {
           message: `更新文件 ${currentFile.split('/').pop()}`,
-          content: btoa(unescape(encodeURIComponent(content))), // Base64编码
+          content: btoa(unescape(encodeURIComponent(content))),
           sha: fileInfo.sha,
           branch: 'main'
         };
@@ -1247,13 +1199,13 @@
         return;
       }
       
-      // 在GitHub中创建文件夹需要创建至少一个文件
+      // 修复新建文件夹功能 - 确保路径正确
       const folderPath = currentPath ? `${currentPath}/${folderName}` : folderName;
       const filePath = `${folderPath}/.gitkeep`;
       
       const data = {
         message: `创建文件夹 ${folderName}`,
-        content: btoa('# 空文件夹占位文件'), // Base64编码
+        content: btoa('# 空文件夹占位文件'),
         branch: 'main'
       };
       
@@ -1286,7 +1238,7 @@
       
       const data = {
         message: `创建文件 ${fileName}`,
-        content: btoa(unescape(encodeURIComponent(content))), // Base64编码
+        content: btoa(unescape(encodeURIComponent(content))),
         branch: 'main'
       };
       
@@ -1309,7 +1261,6 @@
       }
       
       try {
-        // 获取文件的SHA（删除所需）
         const fileInfo = await githubApiRequest(`contents/${path}`);
         
         const data = {
@@ -1371,15 +1322,12 @@
         `;
         fileList.appendChild(fileItem);
         
-        // 上传文件
         await uploadFile(file);
         
-        // 更新状态
         fileItem.querySelector('span:last-child').textContent = '上传成功';
         fileItem.querySelector('span:last-child').style.color = 'var(--accent-green)';
       }
       
-      // 上传完成后刷新文件列表
       setTimeout(() => {
         fileList.style.display = 'none';
         loadFiles(currentPath);
@@ -1396,13 +1344,11 @@
       
       const filePath = currentPath ? `${currentPath}/${file.name}` : file.name;
       
-      // 读取文件内容
       const reader = new FileReader();
       
       return new Promise((resolve, reject) => {
         reader.onload = async function(e) {
           try {
-            // 将文件内容转换为Base64
             const content = btoa(new Uint8Array(e.target.result).reduce((data, byte) => data + String.fromCharCode(byte), ''));
             
             const data = {
@@ -1431,7 +1377,6 @@
     document.addEventListener('DOMContentLoaded', function() {
       loadConfig();
       
-      // 头像加载处理
       const avatarImg = document.querySelector('.avatar-img');
       const avatarFallback = document.querySelector('.avatar-fallback');
       
@@ -1456,7 +1401,6 @@
         }
       }
       
-      // 初始化上传区域
       const uploadArea = document.getElementById('uploadArea');
       const fileInput = document.getElementById('fileInput');
       
