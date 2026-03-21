@@ -414,6 +414,16 @@
       color: white;
     }
     
+    .btn-small.play {
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-purple-2));
+      color: white;
+    }
+    
+    .btn-small.download {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+    }
+    
     .btn-small.delete {
       background: linear-gradient(135deg, var(--accent-red), var(--accent-red-hover));
       color: white;
@@ -447,6 +457,59 @@
       font-size: 14px;
       line-height: 1.5;
       resize: vertical;
+    }
+    
+    /* ================== 文件预览区样式 ================== */
+    .preview-section {
+      background: var(--glass);
+      padding: 16px 18px;
+      border-radius: 10px;
+      margin-top: 20px;
+      display: none;
+    }
+    
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .preview-content {
+      max-height: 400px;
+      overflow-y: auto;
+      background: rgba(7,16,38,0.6);
+      border-radius: 6px;
+      padding: 16px;
+    }
+    
+    /* 图片预览样式 */
+    .preview-image {
+      max-width: 100%;
+      max-height: 300px;
+      display: block;
+      margin: 0 auto;
+      border-radius: 6px;
+    }
+    
+    /* 音乐播放器样式 */
+    .audio-player {
+      width: 100%;
+      margin: 20px 0;
+      background: rgba(7,16,38,0.8);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    
+    .audio-player audio {
+      width: 100%;
+    }
+    
+    .audio-player .audio-info {
+      margin-top: 10px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
     }
     
     /* ================== 模态框样式 ================== */
@@ -598,8 +661,8 @@
     <header>
       <div class="avatar">
         <!-- ================== 注释：修改头像URL的地方 ================== -->
-        <!-- 在这里修改你的头像URL，将下面的 YOUR_AVATAR_URL 替换为你的头像链接 -->
-        <img class="avatar-img" src="YOUR_AVATAR_URL" alt="头像" />
+        <!-- 在这里修改你的头像URL，已将下面的链接改为你提供的头像链接 -->
+        <img class="avatar-img" src="https://i.mituw.com/imgs/2026/03/15/de4945abb96be550.jpg" alt="头像" />
         <div class="avatar-fallback">S3</div>
       </div>
       <div class="title-container">
@@ -614,17 +677,17 @@
         <div class="config-item">
           <div class="config-label">GitHub用户名</div>
           <div class="config-value">
-            <!-- ================== 注释：锁定用户名的地方 ================== -->
-            <!-- 这里用户名已被锁定为 small534460，如果需要修改，请修改下面的 value 值 -->
-            <input type="text" id="username" value="small534460" readonly>
+            <!-- ================== 注释：显示锁定用户名的地方 ================== -->
+            <!-- 这里用户名锁定为 small534460，只显示不显示输入框 -->
+            <div class="locked">small534460</div>
           </div>
         </div>
         <div class="config-item">
           <div class="config-label">仓库名称</div>
           <div class="config-value">
-            <!-- ================== 注释：锁定仓库名的地方 ================== -->
-            <!-- 这里仓库名已被锁定为 wjcf，如果需要修改，请修改下面的 value 值 -->
-            <input type="text" id="repo" value="wjcf" readonly>
+            <!-- ================== 注释：显示锁定仓库名的地方 ================== -->
+            <!-- 这里仓库名锁定为 wjcf，只显示不显示输入框 -->
+            <div class="locked">wjcf</div>
           </div>
         </div>
         <div class="config-item">
@@ -637,7 +700,8 @@
         <div class="config-item">
           <div class="config-label">分支</div>
           <div class="config-value">
-            <input type="text" id="branch" placeholder="输入分支名称" value="main">
+            <!-- ================== 注释：分支固定为main，不显示输入框 ================== -->
+            <div class="locked">main</div>
           </div>
         </div>
       </div>
@@ -659,10 +723,10 @@
         <p>3. 不同文件类型有不同的操作：</p>
         <ul style="margin-left: 20px;">
           <li>📄 文本文件：可编辑</li>
-          <li>🎵 音乐文件：可播放</li>
-          <li>🖼️ 图片文件：可查看</li>
+          <li>🎵 音乐文件：可在网站内播放</li>
+          <li>🖼️ 图片文件：可在网站内查看</li>
           <li>📁 文件夹：可进入并上传文件</li>
-          <li>📎 其他文件：可下载</li>
+          <li>📎 所有文件：都有下载功能</li>
         </ul>
         <p>4. 点击"新建文件夹"或"新建文件"按钮创建新内容</p>
         <p>5. 要上传文件到文件夹，请先进入文件夹，然后使用上传区域</p>
@@ -722,6 +786,20 @@
         <textarea id="fileContent" placeholder="在这里输入文件内容..."></textarea>
       </div>
     </div>
+    
+    <!-- 文件预览区域 -->
+    <div class="preview-section" id="previewSection">
+      <div class="preview-header">
+        <h4 id="previewTitle" style="margin: 0;">文件预览</h4>
+        <div class="file-actions">
+          <button class="btn btn-primary" onclick="downloadCurrentFile()">下载</button>
+          <button class="btn btn-secondary" onclick="closePreview()">关闭</button>
+        </div>
+      </div>
+      <div class="preview-content" id="previewContent">
+        <!-- 预览内容将动态填充 -->
+      </div>
+    </div>
   </div>
   
   <!-- 新建文件夹模态框 -->
@@ -770,6 +848,7 @@
     // ================== 全局变量 ==================
     let currentPath = '';
     let currentFile = null;
+    let currentPreviewFile = null;
     
     // ================== 工具函数 ==================
     function showModal(modalId) {
@@ -790,6 +869,26 @@
       const helpToggle = document.querySelector('.help-toggle');
       helpContent.classList.toggle('show');
       helpToggle.classList.toggle('active');
+    }
+    
+    // ================== 文本编码修复函数 ==================
+    function decodeBase64Content(base64Content) {
+      try {
+        // 修复文本编码问题
+        const binaryString = atob(base64Content);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        return new TextDecoder('utf-8').decode(bytes);
+      } catch (error) {
+        try {
+          // 如果utf-8解码失败，尝试其他编码
+          return atob(base64Content);
+        } catch (e) {
+          return "无法解码文件内容";
+        }
+      }
     }
     
     // ================== 文件类型判断函数 ==================
@@ -818,10 +917,7 @@
     // ================== 配置管理 ==================
     function saveConfig() {
       const config = {
-        username: document.getElementById('username').value,
-        repo: document.getElementById('repo').value,
-        token: document.getElementById('token').value,
-        branch: document.getElementById('branch').value
+        token: document.getElementById('token').value
       };
       localStorage.setItem('githubFileManagerConfig', JSON.stringify(config));
       alert('配置已保存！');
@@ -831,24 +927,17 @@
       const savedConfig = localStorage.getItem('githubFileManagerConfig');
       if (savedConfig) {
         const config = JSON.parse(savedConfig);
-        // ================== 注释：锁定用户名和仓库名的地方 ==================
-        // 这里我们不再从localStorage加载用户名和仓库名，而是使用固定的值
-        document.getElementById('username').value = 'small534460'; // 锁定为 small534460
-        document.getElementById('repo').value = 'wjcf'; // 锁定为 wjcf
+        // 只加载访问令牌
         document.getElementById('token').value = config.token || '';
-        document.getElementById('branch').value = config.branch || 'main';
-      } else {
-        // 默认配置
-        document.getElementById('username').value = 'small534460';
-        document.getElementById('repo').value = 'wjcf';
       }
     }
     
     // ================== GitHub API 函数 ==================
     async function githubApiRequest(endpoint, method = 'GET', data = null) {
-      const username = document.getElementById('username').value;
+      const username = 'small534460'; // 锁定用户名
       const token = document.getElementById('token').value;
-      const repo = document.getElementById('repo').value;
+      const repo = 'wjcf'; // 锁定仓库名
+      const branch = 'main'; // 锁定分支
       
       if (!token) {
         alert('请先输入GitHub访问令牌！');
@@ -891,9 +980,7 @@
       currentPath = path;
       document.getElementById('currentPath').textContent = path || '/';
       
-      const username = document.getElementById('username').value;
-      const repo = document.getElementById('repo').value;
-      const branch = document.getElementById('branch').value;
+      const token = document.getElementById('token').value;
       
       if (!token) {
         alert('请先输入GitHub访问令牌！');
@@ -958,13 +1045,26 @@
             const isMusic = ['mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac'].includes(fileExt);
             const isText = ['txt', 'md', 'js', 'html', 'css', 'json', 'xml', 'yml', 'yaml', 'ini', 'log'].includes(fileExt);
             
-            let actionButton = '';
+            let actionButtons = '';
             if (isText) {
-              actionButton = `<button class="btn-small edit" onclick="event.stopPropagation(); editFile('${item.path}', '${item.name}')">编辑</button>`;
-            } else if (isImage || isMusic) {
-              actionButton = `<button class="btn-small view" onclick="event.stopPropagation(); viewFile('${item.path}', '${item.name}')">打开</button>`;
+              actionButtons = `
+                <button class="btn-small edit" onclick="event.stopPropagation(); editFile('${item.path}', '${item.name}')">编辑</button>
+                <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
+              `;
+            } else if (isMusic) {
+              actionButtons = `
+                <button class="btn-small play" onclick="event.stopPropagation(); previewFile('${item.path}', '${item.name}', 'music')">播放</button>
+                <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
+              `;
+            } else if (isImage) {
+              actionButtons = `
+                <button class="btn-small view" onclick="event.stopPropagation(); previewFile('${item.path}', '${item.name}', 'image')">查看</button>
+                <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
+              `;
             } else {
-              actionButton = `<button class="btn-small view" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>`;
+              actionButtons = `
+                <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
+              `;
             }
             
             const sizeKB = Math.round(item.size / 1024 * 100) / 100;
@@ -974,7 +1074,7 @@
               <div class="file-name">${item.name}</div>
               <div class="file-size">${sizeKB} KB</div>
               <div class="file-actions-small">
-                ${actionButton}
+                ${actionButtons}
                 <button class="btn-small delete" onclick="event.stopPropagation(); deleteItem('${item.path}', false)">删除</button>
               </div>
             `;
@@ -982,8 +1082,8 @@
             // 点击文件时的行为
             if (isText) {
               fileItem.onclick = () => editFile(item.path, item.name);
-            } else if (isImage || isMusic) {
-              fileItem.onclick = () => viewFile(item.path, item.name);
+            } else if (isMusic || isImage) {
+              fileItem.onclick = () => previewFile(item.path, item.name, isMusic ? 'music' : 'image');
             } else {
               fileItem.onclick = () => downloadFile(item.path, item.name);
             }
@@ -1001,16 +1101,57 @@
       }
     }
     
-    async function viewFile(path, name) {
+    async function previewFile(path, name, type) {
+      currentPreviewFile = { path, name, type };
+      
       try {
         const file = await githubApiRequest(`contents/${path}`);
         if (file && file.download_url) {
-          // 在新标签页中打开文件
-          window.open(file.download_url, '_blank');
+          document.getElementById('previewTitle').textContent = `预览文件: ${name}`;
+          document.getElementById('previewSection').style.display = 'block';
+          document.getElementById('editorSection').style.display = 'none';
+          
+          const previewContent = document.getElementById('previewContent');
+          
+          if (type === 'image') {
+            // 图片预览
+            previewContent.innerHTML = `
+              <img src="${file.download_url}" alt="${name}" class="preview-image">
+              <p style="text-align: center; margin-top: 10px; color: var(--muted);">${name}</p>
+            `;
+          } else if (type === 'music') {
+            // 音乐播放器
+            previewContent.innerHTML = `
+              <div class="audio-player">
+                <audio controls>
+                  <source src="${file.download_url}" type="audio/mpeg">
+                  您的浏览器不支持音频播放
+                </audio>
+                <div class="audio-info">正在播放: ${name}</div>
+              </div>
+            `;
+          } else {
+            // 其他文件预览（文本等）
+            const content = decodeBase64Content(file.content.replace(/\s/g, ''));
+            previewContent.innerHTML = `
+              <pre style="white-space: pre-wrap; word-break: break-all; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;">${content}</pre>
+            `;
+          }
         }
       } catch (error) {
-        console.error('查看文件失败:', error);
-        alert('无法打开文件');
+        console.error('预览文件失败:', error);
+        alert('无法预览文件');
+      }
+    }
+    
+    function closePreview() {
+      document.getElementById('previewSection').style.display = 'none';
+      currentPreviewFile = null;
+    }
+    
+    function downloadCurrentFile() {
+      if (currentPreviewFile) {
+        downloadFile(currentPreviewFile.path, currentPreviewFile.name);
       }
     }
     
@@ -1036,6 +1177,7 @@
       currentFile = path;
       document.getElementById('editorTitle').textContent = `编辑文件: ${name}`;
       document.getElementById('editorSection').style.display = 'block';
+      document.getElementById('previewSection').style.display = 'none';
       document.getElementById('fileContent').value = '';
       
       // 加载文件内容
@@ -1046,8 +1188,8 @@
       try {
         const file = await githubApiRequest(`contents/${path}`);
         if (file && file.content) {
-          // Base64解码文件内容
-          const content = atob(file.content.replace(/\s/g, ''));
+          // 修复Base64解码文件内容
+          const content = decodeBase64Content(file.content.replace(/\s/g, ''));
           document.getElementById('fileContent').value = content;
         }
       } catch (error) {
@@ -1069,9 +1211,6 @@
       }
       
       const content = document.getElementById('fileContent').value;
-      const username = document.getElementById('username').value;
-      const repo = document.getElementById('repo').value;
-      const branch = document.getElementById('branch').value;
       
       // 首先获取文件的SHA（用于更新）
       try {
@@ -1081,7 +1220,7 @@
           message: `更新文件 ${currentFile.split('/').pop()}`,
           content: btoa(unescape(encodeURIComponent(content))), // Base64编码
           sha: fileInfo.sha,
-          branch: branch || 'main'
+          branch: 'main'
         };
         
         const result = await githubApiRequest(`contents/${currentFile}`, 'PUT', data);
@@ -1108,10 +1247,6 @@
         return;
       }
       
-      const username = document.getElementById('username').value;
-      const repo = document.getElementById('repo').value;
-      const branch = document.getElementById('branch').value;
-      
       // 在GitHub中创建文件夹需要创建至少一个文件
       const folderPath = currentPath ? `${currentPath}/${folderName}` : folderName;
       const filePath = `${folderPath}/.gitkeep`;
@@ -1119,7 +1254,7 @@
       const data = {
         message: `创建文件夹 ${folderName}`,
         content: btoa('# 空文件夹占位文件'), // Base64编码
-        branch: branch || 'main'
+        branch: 'main'
       };
       
       try {
@@ -1149,14 +1284,10 @@
       const filePath = currentPath ? `${currentPath}/${fileName}` : fileName;
       const content = `# ${fileName}\n\n这是一个新文件，请在此处编写内容。`;
       
-      const username = document.getElementById('username').value;
-      const repo = document.getElementById('repo').value;
-      const branch = document.getElementById('branch').value;
-      
       const data = {
         message: `创建文件 ${fileName}`,
         content: btoa(content), // Base64编码
-        branch: branch || 'main'
+        branch: 'main'
       };
       
       try {
@@ -1184,7 +1315,7 @@
         const data = {
           message: `删除${isDir ? '文件夹' : '文件'} ${path.split('/').pop()}`,
           sha: fileInfo.sha,
-          branch: document.getElementById('branch').value || 'main'
+          branch: 'main'
         };
         
         const result = await githubApiRequest(`contents/${path}`, 'DELETE', data);
@@ -1256,9 +1387,6 @@
     }
     
     async function uploadFile(file) {
-      const username = document.getElementById('username').value;
-      const repo = document.getElementById('repo').value;
-      const branch = document.getElementById('branch').value;
       const token = document.getElementById('token').value;
       
       if (!token) {
@@ -1280,7 +1408,7 @@
             const data = {
               message: `上传文件 ${file.name}`,
               content: content,
-              branch: branch || 'main'
+              branch: 'main'
             };
             
             const result = await githubApiRequest(`contents/${filePath}`, 'PUT', data);
