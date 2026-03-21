@@ -87,7 +87,7 @@
       flex-wrap: wrap;
     }
     
-    /* ================== 修复头像样式 ================== */
+    /* ================== 头像样式 ================== */
     .avatar {
       width: 64px;
       height: 64px;
@@ -1286,7 +1286,7 @@
       
       const data = {
         message: `创建文件 ${fileName}`,
-        content: btoa(content), // Base64编码
+        content: btoa(unescape(encodeURIComponent(content))), // Base64编码
         branch: 'main'
       };
       
