@@ -14,6 +14,8 @@
       --accent-green-hover: #059669;
       --accent-red: #EF4444;
       --accent-red-hover: #DC2626;
+      --accent-purple: #8B5CF6;
+      --accent-purple-2: #7C3AED;
       --muted: rgba(230,238,248,0.6);
       --glass: rgba(255,255,255,0.02);
       --radius: 12px;
@@ -29,14 +31,10 @@
     }
     
     /* ================== 背景图片设置区域 ================== */
-    /* 要更换背景图片，请修改下面的url()中的链接 */
-    /* 示例：url('https://example.com/your-background-image.jpg') */
     body{
       background:
         linear-gradient(180deg, rgba(7,16,38,0.6) 0%, rgba(7,16,38,0.6) 100%),
-        /* ================== 在这里更换背景图片 ================== */
         url('https://i.mituw.com/imgs/2026/02/16/ca72241243868693.jpg') center/cover no-repeat fixed;
-        /* ================== 在这里更换背景图片 ================== */
       color: #e6eef8;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
       -webkit-font-smoothing: antialiased;
@@ -44,11 +42,10 @@
       line-height: 1.6;
       padding: 20px 16px;
       box-sizing: border-box;
-      display: block !important; /* 修复移动端显示问题 */
+      display: block !important;
     }
     
     /* ================== 移动端修复 ================== */
-    /* 确保内容可滚动且显示正常 */
     @media (max-width: 768px) {
       body {
         padding: 16px 12px;
@@ -76,9 +73,9 @@
       box-shadow: 0 8px 30px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
       border: 1px solid rgba(255,255,255,0.03);
       backdrop-filter: blur(6px);
-      margin: 0 auto; /* 水平居中 */
+      margin: 0 auto;
       box-sizing: border-box;
-      min-height: auto; /* 移除固定高度 */
+      min-height: auto;
     }
     
     /* ================== 头部样式 ================== */
@@ -87,10 +84,11 @@
       align-items: center;
       gap: 16px;
       margin-bottom: 12px;
-      flex-wrap: wrap; /* 移动端换行 */
+      flex-wrap: wrap;
     }
     
-    .logo{
+    /* ================== 头像样式 ================== */
+    .avatar {
       width: 64px;
       height: 64px;
       border-radius: 12px;
@@ -103,6 +101,29 @@
       color: white;
       box-shadow: 0 6px 18px rgba(96,165,250,0.12);
       flex: 0 0 64px;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid rgba(96,165,250,0.3);
+    }
+    
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+      display: block;
+    }
+    
+    .avatar-fallback {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 20px;
+      color: white;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
     }
     
     .title-container {
@@ -114,7 +135,7 @@
       margin: 0;
       font-size: 20px;
       letter-spacing: 0.6px;
-      word-break: break-word; /* 防止长文本溢出 */
+      word-break: break-word;
     }
     
     .subtitle{
@@ -340,6 +361,16 @@
       box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
     
+    .btn-purple {
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-purple-2));
+      color: white;
+    }
+    
+    .btn-purple:hover {
+      background: linear-gradient(135deg, var(--accent-purple-2), #6D28D9);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+    
     /* ================== 文件上传区域样式 ================== */
     .upload-section {
       background: var(--glass);
@@ -394,6 +425,42 @@
       border-color: rgba(96,165,250,0.6);
     }
     
+    /* ================== 新建文件夹区域样式 ================== */
+    .folder-section {
+      background: var(--glass);
+      padding: 16px 18px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(96,165,250,0.1);
+    }
+    
+    .folder-section h3 {
+      margin: 0 0 12px 0;
+      color: #f3f9ff;
+      font-size: 16px;
+    }
+    
+    .folder-input-group {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .folder-input {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 6px;
+      border: 1px solid rgba(96,165,250,0.3);
+      background: rgba(7,16,38,0.4);
+      color: #e6eef8;
+      outline: none;
+      font-size: 14px;
+    }
+    
+    .folder-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(96,165,250,0.1);
+    }
+    
     /* ================== 文件列表区域样式 ================== */
     .file-list-section {
       background: var(--glass);
@@ -438,7 +505,7 @@
       align-items: center;
       gap: 12px;
       flex: 1;
-      min-width: 0; /* 防止flex元素溢出 */
+      min-width: 0;
     }
     
     .file-icon {
@@ -456,7 +523,7 @@
     
     .file-details {
       flex: 1;
-      min-width: 0; /* 防止文本溢出 */
+      min-width: 0;
     }
     
     .file-name {
@@ -476,7 +543,7 @@
     .file-actions {
       display: flex;
       gap: 8px;
-      flex-shrink: 0; /* 防止按钮被压缩 */
+      flex-shrink: 0;
     }
     
     .btn-small {
@@ -520,6 +587,8 @@
     .icon-zip { background: linear-gradient(135deg, #8B5CF6, #7C3AED); }
     .icon-txt { background: linear-gradient(135deg, #6B7280, #4B5563); }
     .icon-code { background: linear-gradient(135deg, #F59E0B, #D97706); }
+    .icon-music { background: linear-gradient(135deg, #8B5CF6, #7C3AED); }
+    .icon-folder { background: linear-gradient(135deg, #F59E0B, #D97706); }
     
     /* ================== 移动端适配 ================== */
     @media (max-width: 768px) {
@@ -533,9 +602,12 @@
         text-align: left;
       }
       
-      .logo {
+      .avatar {
         width: 56px;
         height: 56px;
+      }
+      
+      .avatar-fallback {
         font-size: 18px;
       }
       
@@ -561,6 +633,10 @@
       
       .config-info {
         grid-template-columns: 1fr;
+      }
+      
+      .folder-input-group {
+        flex-direction: column;
       }
     }
     
@@ -614,7 +690,11 @@
   <!-- ================== 主内容区 ================== -->
   <main class="wrap" role="main">
     <header>
-      <div class="logo">G</div>
+      <!-- ================== 修改点1：将G方框改为头像 ================== -->
+      <div class="avatar" id="avatarContainer">
+        <img src="https://i.mituw.com/imgs/2026/03/15/de4945abb96be550.jpg" alt="Small 3 的头像" class="avatar-img" id="avatarImg">
+        <div class="avatar-fallback" id="avatarFallback">S3</div>
+      </div>
       <div class="title-container">
         <h1>GitHub 文件管理器</h1>
         <div class="subtitle">Small 3 的 GitHub 仓库文件管理</div>
@@ -664,9 +744,10 @@
             <li><strong>3. 保存 Token</strong>：在上方输入框中粘贴 Token 并点击"保存 Token"</li>
             <li><strong>4. 加载文件</strong>：点击"加载文件"按钮查看仓库中的文件</li>
             <li><strong>5. 上传文件</strong>：选择文件并点击"上传文件"按钮</li>
-            <li><strong>6. 下载文件</strong>：点击文件名旁边的"下载"按钮</li>
-            <li><strong>7. 删除文件</strong>：点击文件名旁边的"删除"按钮（需要确认）</li>
-            <li><strong>注意</strong>：你的文件会发送到small 3的仓库保管</li>
+            <li><strong>6. 新建文件夹</strong>：输入文件夹名称并点击"新建文件夹"按钮</li>
+            <li><strong>7. 下载文件</strong>：点击文件名旁边的"下载"按钮</li>
+            <li><strong>8. 删除文件</strong>：点击文件名旁边的"删除"按钮（需要确认）</li>
+            <li><strong>注意</strong>：Token仅保存在您的浏览器本地，不会发送到任何服务器</li>
           </ul>
         </div>
       </div>
@@ -703,6 +784,24 @@
         </button>
       </div>
 
+      <!-- ================== 修改点2：新建文件夹区域 ================== -->
+      <div class="folder-section">
+        <h3>新建文件夹</h3>
+        <div class="folder-input-group">
+          <input type="text" id="folderName" class="folder-input" placeholder="输入文件夹名称（例如: my-folder）">
+          <button type="button" id="createFolderBtn" class="btn btn-purple">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M.5 3.5A1.5 1.5 0 0 1 2 2h3.672a1.5 1.5 0 0 1 1.414.938l.328.819A1.5 1.5 0 0 0 8.354 5h4.792a1.5 1.5 0 0 1 1.414.938l.5 1.25A1.5 1.5 0 0 1 14 8.5v4a1.5 1.5 0 0 1-1.5 1.5H3.5A1.5 1.5 0 0 1 2 12.5v-9A1.5 1.5 0 0 1 3.5 2z"/>
+              <path d="M8 4a.5.5 0 0 1 .5.5V6h1.5a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V7H6a.5.5 0 0 1 0-1h1.5V4.5A.5.5 0 0 1 8 4z"/>
+            </svg>
+            新建文件夹
+          </button>
+        </div>
+        <div style="color: var(--muted); font-size: 13px; margin-top: 8px;">
+          提示：文件夹名称不能包含特殊字符，使用字母、数字、中划线和下划线
+        </div>
+      </div>
+
       <!-- 文件上传区域 -->
       <div class="upload-section">
         <h3>上传新文件</h3>
@@ -736,7 +835,7 @@
     </section>
 
     <footer>
-      <div class="small">GitHub 文件管理器 v2.0 | 用户名: small534460 | 仓库: wjcf</div>
+      <div class="small">GitHub 文件管理器 v1.1 | 用户名: small534460 | 仓库: wjcf</div>
       <div class="small">
         <a href="https://github.com" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:none">GitHub</a> 
         | © Small 3
@@ -746,9 +845,6 @@
 
   <script>
     // ================== 配置信息 ==================
-    // ================== 锁定信息 ==================
-    // 用户名：small534460 (锁定，不可修改)
-    // 仓库名：wjcf (锁定，不可修改)
     const LOCKED_USERNAME = 'small534460';
     const LOCKED_REPO = 'wjcf';
     
@@ -762,12 +858,16 @@
     const loadFilesBtn = document.getElementById('loadFilesBtn');
     const refreshBtn = document.getElementById('refreshBtn');
     const uploadBtn = document.getElementById('uploadBtn');
+    const createFolderBtn = document.getElementById('createFolderBtn');
+    const folderNameInput = document.getElementById('folderName');
     const fileInput = document.getElementById('fileInput');
     const fileListContainer = document.getElementById('fileListContainer');
     const statusMessage = document.getElementById('statusMessage');
     const loading = document.getElementById('loading');
     const fileListPreview = document.getElementById('fileListPreview');
     const helpToggle = document.getElementById('helpToggle');
+    const avatarImg = document.getElementById('avatarImg');
+    const avatarFallback = document.getElementById('avatarFallback');
     
     // ================== 初始化 ==================
     function init() {
@@ -787,6 +887,16 @@
       if (helpExpanded) {
         helpToggle.classList.add('active');
       }
+      
+      // 处理头像图片加载
+      avatarImg.onload = function() {
+        avatarFallback.style.display = 'none';
+      };
+      
+      avatarImg.onerror = function() {
+        avatarImg.style.display = 'none';
+        avatarFallback.style.display = 'flex';
+      };
     }
     
     // ================== 事件监听器 ==================
@@ -830,6 +940,16 @@
           uploadFiles(fileInput.files);
         } else {
           updateStatus('请先选择要上传的文件', 'error');
+        }
+      });
+      
+      // 新建文件夹按钮
+      createFolderBtn.addEventListener('click', createFolder);
+      
+      // 文件夹名称输入框回车事件
+      folderNameInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          createFolder();
         }
       });
       
@@ -923,6 +1043,7 @@
     }
     
     // ================== 文件操作函数 ==================
+    // ================== 修改点3：为mp3文件添加图标 ==================
     function getFileIconClass(filename) {
       const ext = filename.split('.').pop().toLowerCase();
       if (['pdf'].includes(ext)) return 'icon-pdf';
@@ -931,6 +1052,7 @@
       if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) return 'icon-zip';
       if (['txt', 'md', 'rtf'].includes(ext)) return 'icon-txt';
       if (['html', 'css', 'js', 'json', 'xml', 'py', 'java', 'cpp', 'c', 'php'].includes(ext)) return 'icon-code';
+      if (['mp3', 'wav', 'flac', 'm4a', 'aac', 'ogg'].includes(ext)) return 'icon-music';
       return '';
     }
     
@@ -942,6 +1064,7 @@
       if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) return '📦';
       if (['txt', 'md', 'rtf'].includes(ext)) return '📄';
       if (['html', 'css', 'js', 'json', 'xml', 'py', 'java', 'cpp', 'c', 'php'].includes(ext)) return '💻';
+      if (['mp3', 'wav', 'flac', 'm4a', 'aac', 'ogg'].includes(ext)) return '🎵';
       return '📁';
     }
     
@@ -979,7 +1102,7 @@
         
         const files = await response.json();
         displayFileList(files);
-        updateStatus(`成功加载 ${files.length} 个文件`, 'success');
+        updateStatus(`成功加载 ${files.length} 个文件/文件夹`, 'success');
       } catch (error) {
         console.error('加载文件失败:', error);
         updateStatus(`加载失败: ${error.message}`, 'error');
@@ -999,14 +1122,38 @@
       const fileList = document.createElement('ul');
       fileList.className = 'file-list';
       
-      // 过滤掉目录，只显示文件
+      // 分别处理文件和文件夹
       const fileItems = files.filter(item => item.type === 'file');
+      const folderItems = files.filter(item => item.type === 'dir');
       
-      if (fileItems.length === 0) {
-        fileListContainer.innerHTML = '<p style="color: var(--muted); text-align: center; padding: 20px;">仓库中暂无文件（只有文件夹）</p>';
-        return;
-      }
+      // 先显示文件夹
+      folderItems.forEach(folder => {
+        const listItem = document.createElement('li');
+        listItem.className = 'file-item';
+        
+        listItem.innerHTML = `
+          <div class="file-info">
+            <div class="file-icon icon-folder">📁</div>
+            <div class="file-details">
+              <div class="file-name" title="${folder.name}">${folder.name}/</div>
+              <div class="file-size">文件夹</div>
+            </div>
+          </div>
+          <div class="file-actions">
+            <button class="btn btn-red btn-small delete-folder-btn" data-path="${folder.path}" data-type="dir">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+              </svg>
+              删除
+            </button>
+          </div>
+        `;
+        
+        fileList.appendChild(listItem);
+      });
       
+      // 再显示文件
       fileItems.forEach(file => {
         const listItem = document.createElement('li');
         listItem.className = 'file-item';
@@ -1043,6 +1190,12 @@
         fileList.appendChild(listItem);
       });
       
+      // 如果没有文件也没有文件夹
+      if (folderItems.length === 0 && fileItems.length === 0) {
+        fileListContainer.innerHTML = '<p style="color: var(--muted); text-align: center; padding: 20px;">仓库中暂无文件或文件夹</p>';
+        return;
+      }
+      
       fileListContainer.innerHTML = '';
       fileListContainer.appendChild(fileList);
       
@@ -1061,6 +1214,17 @@
           const path = this.getAttribute('data-path');
           const sha = this.getAttribute('data-sha');
           deleteFile(path, sha);
+        });
+      });
+      
+      // 为删除文件夹按钮添加事件监听
+      document.querySelectorAll('.delete-folder-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const path = this.getAttribute('data-path');
+          const type = this.getAttribute('data-type');
+          if (type === 'dir') {
+            deleteFolder(path);
+          }
         });
       });
     }
@@ -1119,6 +1283,138 @@
       } catch (error) {
         console.error('删除文件失败:', error);
         updateStatus(`删除失败: ${error.message}`, 'error');
+      } finally {
+        hideLoading();
+      }
+    }
+    
+    // 删除文件夹（递归删除文件夹内所有文件）
+    async function deleteFolder(path) {
+      if (!currentToken) {
+        updateStatus('请先输入并保存 GitHub Token', 'error');
+        return;
+      }
+      
+      if (!confirm(`警告：确定要删除文件夹 "${path}" 吗？这将删除文件夹内的所有文件，此操作无法撤销！`)) {
+        return;
+      }
+      
+      showLoading();
+      updateStatus('正在删除文件夹及其内容...', 'info');
+      
+      try {
+        // 首先获取文件夹内的所有文件
+        const listUrl = `https://api.github.com/repos/${LOCKED_USERNAME}/${LOCKED_REPO}/contents/${encodeURIComponent(path)}`;
+        const listResponse = await fetch(listUrl, {
+          headers: {
+            'Authorization': `token ${currentToken}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        
+        if (!listResponse.ok) {
+          throw new Error(`获取文件夹内容失败: ${listResponse.status} ${listResponse.statusText}`);
+        }
+        
+        const contents = await listResponse.json();
+        
+        // 递归删除文件夹内的所有文件和子文件夹
+        for (const item of contents) {
+          if (item.type === 'file') {
+            await deleteFile(item.path, item.sha);
+          } else if (item.type === 'dir') {
+            await deleteFolder(item.path);
+          }
+        }
+        
+        // 最后删除文件夹本身（实际上是删除.gitkeep文件）
+        // 注意：GitHub没有真正的空文件夹，所以这里我们不需要额外操作
+        updateStatus('文件夹删除成功', 'success');
+        
+        // 重新加载文件列表
+        setTimeout(() => loadFiles(), 1000);
+      } catch (error) {
+        console.error('删除文件夹失败:', error);
+        updateStatus(`删除失败: ${error.message}`, 'error');
+      } finally {
+        hideLoading();
+      }
+    }
+    
+    // ================== 修改点4：新建文件夹功能 ==================
+    async function createFolder() {
+      if (!currentToken) {
+        updateStatus('请先输入并保存 GitHub Token', 'error');
+        return;
+      }
+      
+      const folderName = folderNameInput.value.trim();
+      
+      if (!folderName) {
+        updateStatus('请输入文件夹名称', 'error');
+        folderNameInput.focus();
+        return;
+      }
+      
+      // 验证文件夹名称
+      const folderNameRegex = /^[a-zA-Z0-9_\-\u4e00-\u9fa5]+$/;
+      if (!folderNameRegex.test(folderName)) {
+        updateStatus('文件夹名称只能包含字母、数字、汉字、下划线和中划线', 'error');
+        folderNameInput.focus();
+        return;
+      }
+      
+      showLoading();
+      updateStatus(`正在创建文件夹 "${folderName}"...`, 'info');
+      
+      try {
+        // 在GitHub上创建文件夹实际上是通过创建一个占位文件来实现的
+        // 通常使用.gitkeep文件作为占位
+        const placeholderPath = `${folderName}/.gitkeep`;
+        
+        // 检查文件夹是否已存在
+        const checkUrl = `https://api.github.com/repos/${LOCKED_USERNAME}/${LOCKED_REPO}/contents/${encodeURIComponent(folderName)}`;
+        const checkResponse = await fetch(checkUrl, {
+          headers: {
+            'Authorization': `token ${currentToken}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        
+        if (checkResponse.ok) {
+          updateStatus(`文件夹 "${folderName}" 已存在`, 'error');
+          hideLoading();
+          return;
+        }
+        
+        // 创建.gitkeep文件
+        const url = `https://api.github.com/repos/${LOCKED_USERNAME}/${LOCKED_REPO}/contents/${encodeURIComponent(placeholderPath)}`;
+        
+        const response = await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${currentToken}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: `Create folder: ${folderName}`,
+            content: btoa('') // 空文件的base64编码
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`创建失败: ${response.status} ${response.statusText}`);
+        }
+        
+        updateStatus(`文件夹 "${folderName}" 创建成功`, 'success');
+        folderNameInput.value = '';
+        
+        // 重新加载文件列表
+        setTimeout(() => loadFiles(), 1000);
+      } catch (error) {
+        console.error('创建文件夹失败:', error);
+        updateStatus(`创建失败: ${error.message}`, 'error');
       } finally {
         hideLoading();
       }
