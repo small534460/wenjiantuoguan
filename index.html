@@ -1,0 +1,1122 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GitHub 文件管理器</title>
+  <meta name="description" content="一个简单的GitHub仓库文件管理工具，支持上传、查看、删除和下载文件。" />
+  <style>
+    :root{
+      --accent: #60a5fa;
+      --accent-2: #3b82f6;
+      --accent-green: #10B981;
+      --accent-green-hover: #059669;
+      --accent-red: #EF4444;
+      --accent-red-hover: #DC2626;
+      --muted: rgba(230,238,248,0.6);
+      --glass: rgba(255,255,255,0.02);
+      --glass-light: rgba(255,255,255,0.05);
+      --glass-border: rgba(255,255,255,0.08);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-lg: 16px;
+      --shadow: 0 8px 30px rgba(2,6,23,0.6);
+      --shadow-hover: 0 14px 40px rgba(2,6,23,0.8);
+      --shadow-inset: inset 0 1px 0 rgba(255,255,255,0.02);
+    }
+    
+    html, body { 
+      height: 100%; 
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    
+    body{
+      background:
+        linear-gradient(180deg, rgba(7,16,38,0.6) 0%, rgba(7,16,38,0.6) 100%),
+        url('https://i.mituw.com/imgs/2026/02/19/31afc956e5f2261b.png') center/cover no-repeat fixed;
+      color: #e6eef8;
+      min-height: 100vh;
+      padding: 20px 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+    }
+    
+    .wrap{
+      width: 100%;
+      max-width: 1000px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow), var(--shadow-inset);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(12px);
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
+    
+    header{
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    
+    .logo{
+      width: 70px;
+      height: 70px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 24px;
+      color: white;
+      box-shadow: 0 6px 20px rgba(96,165,250,0.2);
+      flex: 0 0 70px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .logo::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to bottom right, rgba(255,255,255,0.1), transparent);
+      pointer-events: none;
+    }
+    
+    h1{
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 0.6px;
+      font-weight: 600;
+      background: linear-gradient(to right, #e6eef8, #b0d0ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .subtitle{
+      margin: 8px 0 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    
+    .content{
+      margin-top: 24px;
+    }
+    
+    .config-section {
+      background: linear-gradient(135deg, rgba(96,165,250,0.1), rgba(59,130,246,0.05));
+      padding: 20px 24px;
+      border-radius: var(--radius);
+      margin-bottom: 28px;
+      border: 1px solid rgba(96,165,250,0.1);
+      backdrop-filter: blur(5px);
+    }
+    
+    .config-section h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      color: #dceafc;
+      font-size: 18px;
+    }
+    
+    .config-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .form-group label {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    
+    .form-input {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(96,165,250,0.3);
+      outline: none;
+      font-size: 15px;
+      background: rgba(7,16,38,0.4);
+      color: #e6eef8;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(5px);
+    }
+    
+    .form-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(96,165,250,0.1);
+    }
+    
+    .form-input::placeholder {
+      color: rgba(173, 186, 203, 0.6);
+    }
+    
+    .buttons-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      border-radius: var(--radius-sm);
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(5px);
+      min-width: 120px;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+    }
+    
+    .btn-green {
+      background: linear-gradient(135deg, var(--accent-green), #0ea271) !important;
+      color: white;
+    }
+    
+    .btn-green:hover {
+      background: linear-gradient(135deg, var(--accent-green-hover), #0d9268) !important;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+    }
+    
+    .btn-red {
+      background: linear-gradient(135deg, var(--accent-red), #DC2626) !important;
+      color: white;
+    }
+    
+    .btn-red:hover {
+      background: linear-gradient(135deg, var(--accent-red-hover), #B91C1C) !important;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3) !important;
+    }
+    
+    .upload-section {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+      padding: 20px 24px;
+      border-radius: var(--radius);
+      margin-bottom: 28px;
+      border: 1px solid rgba(16, 185, 129, 0.1);
+      backdrop-filter: blur(5px);
+    }
+    
+    .upload-section h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      color: #dceafc;
+      font-size: 18px;
+    }
+    
+    .file-upload {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+    
+    .file-input-wrapper input[type=file] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+    
+    .file-input-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 24px;
+      background: rgba(7,16,38,0.4);
+      border: 1px dashed rgba(96,165,250,0.4);
+      border-radius: var(--radius-sm);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .file-input-label:hover {
+      background: rgba(7,16,38,0.6);
+      border-color: rgba(96,165,250,0.6);
+    }
+    
+    .file-list-section {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(124, 58, 237, 0.05));
+      padding: 20px 24px;
+      border-radius: var(--radius);
+      margin-bottom: 28px;
+      border: 1px solid rgba(139, 92, 246, 0.1);
+      backdrop-filter: blur(5px);
+    }
+    
+    .file-list-section h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      color: #dceafc;
+      font-size: 18px;
+    }
+    
+    .file-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 12px;
+    }
+    
+    .file-item {
+      background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border-radius: var(--radius);
+      padding: 16px;
+      border: 1px solid var(--glass-border);
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .file-item:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(96,165,250,0.2);
+      background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(96,165,250,0.02));
+    }
+    
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .file-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      flex: 0 0 40px;
+    }
+    
+    .file-details {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .file-name {
+      font-weight: 600;
+      color: #f3f9ff;
+      font-size: 15px;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .file-size {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 4px 0 0 0;
+    }
+    
+    .file-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn-small {
+      padding: 8px 16px;
+      font-size: 14px;
+      min-width: auto;
+      flex: 1;
+    }
+    
+    .status-section {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05));
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      border: 1px solid rgba(245, 158, 11, 0.1);
+      backdrop-filter: blur(5px);
+    }
+    
+    .status-message {
+      margin: 0;
+      color: #dceafc;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .status-success {
+      color: #10B981;
+    }
+    
+    .status-error {
+      color: #EF4444;
+    }
+    
+    .status-info {
+      color: #60a5fa;
+    }
+    
+    .loading {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      margin: 20px 0;
+    }
+    
+    .loading.active {
+      display: flex;
+    }
+    
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(96,165,250,0.3);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    footer{
+      margin-top: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 14px;
+      padding-top: 20px;
+      border-top: 1px solid var(--glass-border);
+    }
+    
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    
+    footer a:hover {
+      color: #93c5fd;
+      text-decoration: underline;
+    }
+    
+    /* 移动端适配 */
+    @media (max-width: 768px) {
+      body {
+        padding: 16px 12px;
+      }
+      
+      .wrap {
+        padding: 24px 20px;
+      }
+      
+      .config-form {
+        grid-template-columns: 1fr;
+      }
+      
+      .buttons-row {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+      }
+      
+      .file-list {
+        grid-template-columns: 1fr;
+      }
+      
+      header {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+      }
+      
+      footer {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .wrap {
+        padding: 20px 16px;
+      }
+      
+      .config-section,
+      .upload-section,
+      .file-list-section,
+      .status-section {
+        padding: 16px;
+      }
+    }
+    
+    /* GitHub API说明区域 */
+    .github-info {
+      background: linear-gradient(135deg, rgba(96,165,250,0.05), rgba(59,130,246,0.02));
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      border: 1px solid rgba(96,165,250,0.1);
+      font-size: 14px;
+    }
+    
+    .github-info h4 {
+      margin-top: 0;
+      color: #dceafc;
+      font-size: 16px;
+    }
+    
+    .github-info ul {
+      margin: 8px 0;
+      padding-left: 20px;
+    }
+    
+    .github-info li {
+      margin-bottom: 6px;
+      color: var(--muted);
+    }
+    
+    .github-info a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    
+    .github-info a:hover {
+      text-decoration: underline;
+    }
+    
+    /* 文件类型图标颜色 */
+    .icon-pdf { background: linear-gradient(135deg, #EF4444, #DC2626) !important; }
+    .icon-doc { background: linear-gradient(135deg, #3B82F6, #1D4ED8) !important; }
+    .icon-img { background: linear-gradient(135deg, #10B981, #059669) !important; }
+    .icon-zip { background: linear-gradient(135deg, #8B5CF6, #7C3AED) !important; }
+    .icon-txt { background: linear-gradient(135deg, #6B7280, #4B5563) !important; }
+    .icon-code { background: linear-gradient(135deg, #F59E0B, #D97706) !important; }
+  </style>
+</head>
+<body>
+  <main class="wrap" role="main">
+    <header>
+      <div class="logo">G</div>
+      <div>
+        <h1>GitHub 文件管理器</h1>
+        <div class="subtitle">上传、查看、删除和下载文件到您的GitHub仓库</div>
+      </div>
+    </header>
+
+    <section class="content">
+      <!-- GitHub API配置区域 -->
+      <div class="config-section">
+        <h3>GitHub 配置</h3>
+        <form id="configForm" class="config-form">
+          <div class="form-group">
+            <label for="username">GitHub 用户名</label>
+            <input type="text" id="username" class="form-input" placeholder="输入您的GitHub用户名" required>
+          </div>
+          <div class="form-group">
+            <label for="repo">仓库名称</label>
+            <input type="text" id="repo" class="form-input" placeholder="输入仓库名称" required>
+          </div>
+          <div class="form-group">
+            <label for="token">GitHub Token</label>
+            <input type="password" id="token" class="form-input" placeholder="输入您的GitHub个人访问令牌" required>
+          </div>
+          <div class="form-group">
+            <label for="path">文件路径 (可选)</label>
+            <input type="text" id="path" class="form-input" placeholder="例如: uploads/ 或 images/">
+          </div>
+        </form>
+        <div class="buttons-row">
+          <button type="button" id="loadFilesBtn" class="btn btn-primary">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M4.406 1.342A5.53 5.53 0 0 1 8 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 0 1 0-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 0 0-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 0 1 0 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z"/>
+              <path d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3z"/>
+            </svg>
+            加载文件
+          </button>
+          <button type="button" id="saveConfigBtn" class="btn btn-green">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z"/>
+            </svg>
+            保存配置
+          </button>
+          <button type="button" id="clearConfigBtn" class="btn btn-red">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+              <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+            </svg>
+            清除配置
+          </button>
+        </div>
+      </div>
+
+      <!-- GitHub API使用说明 -->
+      <div class="github-info">
+        <h4>如何使用：</h4>
+        <ul>
+          <li>1. 在 <a href="https://github.com/settings/tokens" target="_blank">GitHub Token设置页面</a> 创建一个新的个人访问令牌</li>
+          <li>2. 选择 <strong>repo</strong> 权限（完全控制私有和公共仓库）</li>
+          <li>3. 将生成的令牌粘贴到上面的Token输入框中</li>
+          <li>4. 填写您的GitHub用户名和仓库名称</li>
+          <li>5. 点击"保存配置"保存设置，然后点击"加载文件"查看仓库中的文件</li>
+        </ul>
+      </div>
+
+      <!-- 状态显示区域 -->
+      <div class="status-section">
+        <p id="statusMessage" class="status-message">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+          </svg>
+          等待配置...
+        </p>
+      </div>
+
+      <!-- 加载动画 -->
+      <div id="loading" class="loading">
+        <div class="loading-spinner"></div>
+        <span>正在加载...</span>
+      </div>
+
+      <!-- 文件上传区域 -->
+      <div class="upload-section">
+        <h3>上传文件</h3>
+        <div class="file-upload">
+          <div class="file-input-wrapper">
+            <input type="file" id="fileInput" multiple>
+            <label for="fileInput" class="file-input-label">
+              <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+              </svg>
+              选择要上传的文件（支持多选）
+            </label>
+          </div>
+          <div class="buttons-row">
+            <button type="button" id="uploadBtn" class="btn btn-green">
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+              </svg>
+              上传文件
+            </button>
+          </div>
+          <div id="fileListPreview"></div>
+        </div>
+      </div>
+
+      <!-- 文件列表区域 -->
+      <div class="file-list-section">
+        <h3>仓库文件列表</h3>
+        <div id="fileListContainer">
+          <p style="color: var(--muted); text-align: center;">请先配置GitHub信息并加载文件</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="small">GitHub 文件管理器 v1.0</div>
+      <div class="small">
+        使用 GitHub API | 
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer">访问 GitHub</a>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // 配置存储
+    const STORAGE_KEY = 'github_file_manager_config';
+    
+    // DOM元素
+    const configForm = document.getElementById('configForm');
+    const loadFilesBtn = document.getElementById('loadFilesBtn');
+    const saveConfigBtn = document.getElementById('saveConfigBtn');
+    const clearConfigBtn = document.getElementById('clearConfigBtn');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const fileInput = document.getElementById('fileInput');
+    const fileListContainer = document.getElementById('fileListContainer');
+    const statusMessage = document.getElementById('statusMessage');
+    const loading = document.getElementById('loading');
+    const fileListPreview = document.getElementById('fileListPreview');
+    
+    // GitHub API配置
+    let config = {
+      username: '',
+      repo: '',
+      token: '',
+      path: ''
+    };
+    
+    // 初始化加载保存的配置
+    function loadConfig() {
+      const savedConfig = localStorage.getItem(STORAGE_KEY);
+      if (savedConfig) {
+        config = JSON.parse(savedConfig);
+        document.getElementById('username').value = config.username || '';
+        document.getElementById('repo').value = config.repo || '';
+        document.getElementById('token').value = config.token || '';
+        document.getElementById('path').value = config.path || '';
+        updateStatus('配置已加载', 'info');
+      }
+    }
+    
+    // 保存配置到本地存储
+    function saveConfig() {
+      config.username = document.getElementById('username').value.trim();
+      config.repo = document.getElementById('repo').value.trim();
+      config.token = document.getElementById('token').value.trim();
+      config.path = document.getElementById('path').value.trim();
+      
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+      updateStatus('配置已保存', 'success');
+    }
+    
+    // 清除配置
+    function clearConfig() {
+      localStorage.removeItem(STORAGE_KEY);
+      config = { username: '', repo: '', token: '', path: '' };
+      configForm.reset();
+      updateStatus('配置已清除', 'info');
+      fileListContainer.innerHTML = '<p style="color: var(--muted); text-align: center;">请先配置GitHub信息并加载文件</p>';
+    }
+    
+    // 更新状态消息
+    function updateStatus(message, type = 'info') {
+      const icon = statusMessage.querySelector('svg');
+      statusMessage.innerHTML = '';
+      statusMessage.appendChild(icon);
+      statusMessage.appendChild(document.createTextNode(message));
+      
+      // 清除之前的颜色类
+      statusMessage.classList.remove('status-success', 'status-error', 'status-info');
+      
+      // 添加新的颜色类
+      if (type === 'success') {
+        statusMessage.classList.add('status-success');
+      } else if (type === 'error') {
+        statusMessage.classList.add('status-error');
+      } else {
+        statusMessage.classList.add('status-info');
+      }
+    }
+    
+    // 显示加载动画
+    function showLoading() {
+      loading.classList.add('active');
+    }
+    
+    // 隐藏加载动画
+    function hideLoading() {
+      loading.classList.remove('active');
+    }
+    
+    // 获取文件图标类
+    function getFileIconClass(filename) {
+      const ext = filename.split('.').pop().toLowerCase();
+      if (['pdf'].includes(ext)) return 'icon-pdf';
+      if (['doc', 'docx', 'odt'].includes(ext)) return 'icon-doc';
+      if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'].includes(ext)) return 'icon-img';
+      if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) return 'icon-zip';
+      if (['txt', 'md', 'rtf'].includes(ext)) return 'icon-txt';
+      if (['html', 'css', 'js', 'json', 'xml', 'py', 'java', 'cpp', 'c', 'php'].includes(ext)) return 'icon-code';
+      return '';
+    }
+    
+    // 获取文件图标字符
+    function getFileIconChar(filename) {
+      const ext = filename.split('.').pop().toLowerCase();
+      if (['pdf'].includes(ext)) return '📄';
+      if (['doc', 'docx', 'odt'].includes(ext)) return '📝';
+      if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'].includes(ext)) return '🖼️';
+      if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) return '📦';
+      if (['txt', 'md', 'rtf'].includes(ext)) return '📄';
+      if (['html', 'css', 'js', 'json', 'xml', 'py', 'java', 'cpp', 'c', 'php'].includes(ext)) return '💻';
+      return '📁';
+    }
+    
+    // 格式化文件大小
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // 从GitHub获取文件列表
+    async function loadFiles() {
+      if (!config.username || !config.repo || !config.token) {
+        updateStatus('请先配置GitHub信息', 'error');
+        return;
+      }
+      
+      showLoading();
+      updateStatus('正在加载文件列表...', 'info');
+      
+      try {
+        const path = config.path ? encodeURIComponent(config.path) : '';
+        const url = `https://api.github.com/repos/${config.username}/${config.repo}/contents/${path}`;
+        
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `token ${config.token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`GitHub API错误: ${response.status} ${response.statusText}`);
+        }
+        
+        const files = await response.json();
+        displayFileList(files);
+        updateStatus(`已加载 ${files.length} 个文件`, 'success');
+      } catch (error) {
+        console.error('加载文件失败:', error);
+        updateStatus(`加载失败: ${error.message}`, 'error');
+      } finally {
+        hideLoading();
+      }
+    }
+    
+    // 显示文件列表
+    function displayFileList(files) {
+      if (!files || files.length === 0) {
+        fileListContainer.innerHTML = '<p style="color: var(--muted); text-align: center;">仓库中暂无文件</p>';
+        return;
+      }
+      
+      const fileList = document.createElement('ul');
+      fileList.className = 'file-list';
+      
+      files.forEach(file => {
+        const listItem = document.createElement('li');
+        listItem.className = 'file-item';
+        
+        const iconClass = getFileIconClass(file.name);
+        const iconChar = getFileIconChar(file.name);
+        
+        listItem.innerHTML = `
+          <div class="file-info">
+            <div class="file-icon ${iconClass}">${iconChar}</div>
+            <div class="file-details">
+              <h4 class="file-name" title="${file.name}">${file.name}</h4>
+              <p class="file-size">${formatFileSize(file.size)}</p>
+            </div>
+          </div>
+          <div class="file-actions">
+            <button class="btn btn-primary btn-small download-btn" data-url="${file.download_url}" data-filename="${file.name}">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+              下载
+            </button>
+            <button class="btn btn-red btn-small delete-btn" data-path="${file.path}" data-sha="${file.sha}">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+              </svg>
+              删除
+            </button>
+          </div>
+        `;
+        
+        fileList.appendChild(listItem);
+      });
+      
+      fileListContainer.innerHTML = '';
+      fileListContainer.appendChild(fileList);
+      
+      // 为下载按钮添加事件监听
+      document.querySelectorAll('.download-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const url = this.getAttribute('data-url');
+          const filename = this.getAttribute('data-filename');
+          downloadFile(url, filename);
+        });
+      });
+      
+      // 为删除按钮添加事件监听
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const path = this.getAttribute('data-path');
+          const sha = this.getAttribute('data-sha');
+          deleteFile(path, sha);
+        });
+      });
+    }
+    
+    // 下载文件
+    function downloadFile(url, filename) {
+      updateStatus(`正在下载 ${filename}...`, 'info');
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      
+      updateStatus(`已开始下载 ${filename}`, 'success');
+    }
+    
+    // 删除文件
+    async function deleteFile(path, sha) {
+      if (!confirm(`确定要删除 "${path.split('/').pop()}" 吗？此操作无法撤销。`)) {
+        return;
+      }
+      
+      if (!config.username || !config.repo || !config.token) {
+        updateStatus('请先配置GitHub信息', 'error');
+        return;
+      }
+      
+      showLoading();
+      updateStatus('正在删除文件...', 'info');
+      
+      try {
+        const url = `https://api.github.com/repos/${config.username}/${config.repo}/contents/${path}`;
+        
+        const response = await fetch(url, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `token ${config.token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: `Delete ${path.split('/').pop()}`,
+            sha: sha
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`删除失败: ${response.status} ${response.statusText}`);
+        }
+        
+        updateStatus('文件删除成功', 'success');
+        // 重新加载文件列表
+        setTimeout(() => loadFiles(), 1000);
+      } catch (error) {
+        console.error('删除文件失败:', error);
+        updateStatus(`删除失败: ${error.message}`, 'error');
+      } finally {
+        hideLoading();
+      }
+    }
+    
+    // 上传文件到GitHub
+    async function uploadFiles(files) {
+      if (!config.username || !config.repo || !config.token) {
+        updateStatus('请先配置GitHub信息', 'error');
+        return;
+      }
+      
+      if (!files || files.length === 0) {
+        updateStatus('请选择要上传的文件', 'error');
+        return;
+      }
+      
+      showLoading();
+      
+      let successCount = 0;
+      let errorCount = 0;
+      
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        updateStatus(`正在上传 ${file.name} (${i + 1}/${files.length})...`, 'info');
+        
+        try {
+          // 读取文件内容并转换为base64
+          const content = await readFileAsBase64(file);
+          
+          // 构建文件路径
+          const filePath = config.path ? `${config.path.replace(/\/$/, '')}/${file.name}` : file.name;
+          
+          // 检查文件是否已存在（获取sha）
+          let sha = '';
+          try {
+            const checkUrl = `https://api.github.com/repos/${config.username}/${config.repo}/contents/${encodeURIComponent(filePath)}`;
+            const checkResponse = await fetch(checkUrl, {
+              headers: {
+                'Authorization': `token ${config.token}`,
+                'Accept': 'application/vnd.github.v3+json'
+              }
+            });
+            
+            if (checkResponse.ok) {
+              const existingFile = await checkResponse.json();
+              sha = existingFile.sha;
+            }
+          } catch (e) {
+            // 文件不存在，继续上传
+          }
+          
+          // 上传文件
+          const url = `https://api.github.com/repos/${config.username}/${config.repo}/contents/${encodeURIComponent(filePath)}`;
+          
+          const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `token ${config.token}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              message: `Upload ${file.name}`,
+              content: content.split(',')[1], // 移除data:前缀
+              sha: sha || undefined
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error(`上传失败: ${response.status} ${response.statusText}`);
+          }
+          
+          successCount++;
+        } catch (error) {
+          console.error(`上传文件 ${file.name} 失败:`, error);
+          errorCount++;
+        }
+      }
+      
+      hideLoading();
+      
+      if (errorCount === 0) {
+        updateStatus(`成功上传 ${successCount} 个文件`, 'success');
+      } else {
+        updateStatus(`上传完成: ${successCount} 个成功, ${errorCount} 个失败`, successCount > 0 ? 'success' : 'error');
+      }
+      
+      // 重新加载文件列表
+      setTimeout(() => loadFiles(), 1000);
+      // 清空文件输入
+      fileInput.value = '';
+      fileListPreview.innerHTML = '';
+    }
+    
+    // 将文件读取为base64
+    function readFileAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+    
+    // 显示文件选择预览
+    function showFilePreview(files) {
+      if (!files || files.length === 0) {
+        fileListPreview.innerHTML = '';
+        return;
+      }
+      
+      let html = '<h4>已选择的文件:</h4><ul style="margin: 10px 0; padding-left: 20px;">';
+      
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        html += `<li>${file.name} (${formatFileSize(file.size)})</li>`;
+      }
+      
+      html += '</ul>';
+      fileListPreview.innerHTML = html;
+    }
+    
+    // 初始化事件监听
+    function initEventListeners() {
+      // 保存配置按钮
+      saveConfigBtn.addEventListener('click', saveConfig);
+      
+      // 清除配置按钮
+      clearConfigBtn.addEventListener('click', clearConfig);
+      
+      // 加载文件按钮
+      loadFilesBtn.addEventListener('click', loadFiles);
+      
+      // 上传文件按钮
+      uploadBtn.addEventListener('click', () => {
+        if (fileInput.files.length > 0) {
+          uploadFiles(fileInput.files);
+        } else {
+          updateStatus('请先选择要上传的文件', 'error');
+        }
+      });
+      
+      // 文件选择变化
+      fileInput.addEventListener('change', () => {
+        showFilePreview(fileInput.files);
+      });
+    }
+    
+    // 初始化应用
+    function init() {
+      loadConfig();
+      initEventListeners();
+    }
+    
+    // 当页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
