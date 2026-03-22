@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0,minimum-scale=1.0,user-scalable=yes" />
-  <title>双模式文件管理器</title>
-  <meta name="description" content="Small 3 的双模式文件管理系统" />
+  <title>GitHub 文件管理器</title>
+  <meta name="description" content="Small 3 的GitHub文件管理系统" />
   <style>
     /* ================== CSS变量定义 ================== */
     :root{
@@ -16,8 +16,6 @@
       --accent-red-hover: #DC2626;
       --accent-purple: #8B5CF6;
       --accent-purple-2: #7C3AED;
-      --accent-orange: #F59E0B;
-      --accent-orange-hover: #D97706;
       --muted: rgba(230,238,248,0.6);
       --glass: rgba(255,255,255,0.02);
       --radius: 12px;
@@ -159,79 +157,7 @@
       margin-top: 18px;
     }
     
-    /* ================== 模式切换按钮样式 ================== */
-    .mode-selector {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-    
-    .mode-btn {
-      flex: 1;
-      min-width: 200px;
-      padding: 14px 20px;
-      border-radius: 10px;
-      border: 1px solid rgba(96,165,250,0.2);
-      background: linear-gradient(135deg, rgba(96,165,250,0.1), rgba(59,130,246,0.05));
-      color: #e6eef8;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-align: center;
-      backdrop-filter: blur(5px);
-    }
-    
-    .mode-btn:hover {
-      background: linear-gradient(135deg, rgba(96,165,250,0.2), rgba(59,130,246,0.1));
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(96,165,250,0.2);
-    }
-    
-    .mode-btn.active {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: white;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(96,165,250,0.2);
-    }
-    
-    .mode-btn.github-mode {
-      background: linear-gradient(135deg, rgba(24,24,27,0.8), rgba(39,39,42,0.8));
-      border-color: rgba(63,63,70,0.5);
-    }
-    
-    .mode-btn.github-mode:hover {
-      background: linear-gradient(135deg, rgba(39,39,42,0.9), rgba(63,63,70,0.9));
-    }
-    
-    .mode-btn.github-mode.active {
-      background: linear-gradient(135deg, #333, #444);
-      border-color: #666;
-      box-shadow: 0 0 0 3px rgba(113,113,122,0.2);
-    }
-    
-    .mode-btn.cloud-mode {
-      background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(124,58,237,0.05));
-      border-color: rgba(139,92,246,0.2);
-    }
-    
-    .mode-btn.cloud-mode:hover {
-      background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(124,58,237,0.1));
-    }
-    
-    .mode-btn.cloud-mode.active {
-      background: linear-gradient(135deg, var(--accent-purple), var(--accent-purple-2));
-      border-color: var(--accent-purple-2);
-      box-shadow: 0 0 0 3px rgba(139,92,246,0.2);
-    }
-    
-    .mode-btn i {
-      margin-right: 8px;
-      font-size: 18px;
-    }
-    
-    /* ================== 配置区域样式 ================== */
+    /* ================== 配置信息样式 ================== */
     .config-section {
       background: var(--glass);
       padding: 12px 14px;
@@ -239,11 +165,6 @@
       margin-bottom: 16px;
       color: #dceafc;
       font-size: 15px;
-      transition: all 0.3s ease;
-    }
-    
-    .config-section.hidden {
-      display: none;
     }
     
     .config-info {
@@ -273,6 +194,7 @@
       word-break: break-all;
     }
     
+    /* 注释：锁定用户名和仓库名的样式 */
     .config-value .locked {
       padding: 6px 8px;
       border-radius: 4px;
@@ -301,88 +223,53 @@
       box-shadow: 0 0 0 2px rgba(96,165,250,0.1);
     }
     
-    .config-value textarea {
-      width: 100%;
-      padding: 6px 8px;
-      border-radius: 4px;
-      border: 1px solid rgba(96,165,250,0.3);
-      background: rgba(7,16,38,0.4);
-      color: #e6eef8;
-      outline: none;
-      box-sizing: border-box;
-      font-family: inherit;
-      font-size: 14px;
-      resize: vertical;
-      min-height: 60px;
+    .config-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
     }
     
-    .config-value select {
-      width: 100%;
-      padding: 6px 8px;
-      border-radius: 4px;
-      border: 1px solid rgba(96,165,250,0.3);
-      background: rgba(7,16,38,0.4);
-      color: #e6eef8;
-      outline: none;
-      box-sizing: border-box;
-      font-family: inherit;
-      font-size: 14px;
+    /* ================== 文件管理器样式 ================== */
+    .file-manager-section {
+      background: var(--glass);
+      padding: 16px 18px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      color: #dceafc;
+      font-size: 15px;
     }
     
-    /* ================== 按钮样式 ================== */
+    .file-manager-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .file-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
     .btn {
       padding: 8px 16px;
       border-radius: 6px;
       border: none;
       font-weight: 600;
-      font-size: 14px;
       cursor: pointer;
       transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      text-decoration: none;
+      font-size: 14px;
     }
     
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: white;
-    }
-    
-    .btn-primary:hover {
-      background: linear-gradient(135deg, var(--accent-2), #2563eb);
-      transform: translateY(-1px);
-    }
-    
-    .btn-secondary {
-      background: rgba(255,255,255,0.1);
-      color: #e6eef8;
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-    
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.15);
-    }
-    
-    .btn-success {
       background: linear-gradient(135deg, var(--accent-green), var(--accent-green-hover));
       color: white;
     }
     
-    .btn-success:hover {
-      background: linear-gradient(135deg, var(--accent-green-hover), #047857);
-      transform: translateY(-1px);
-    }
-    
-    .btn-warning {
-      background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-hover));
-      color: white;
-    }
-    
-    .btn-warning:hover {
-      background: linear-gradient(135deg, var(--accent-orange-hover), #b45309);
-      transform: translateY(-1px);
+    .btn-secondary {
+      background: rgba(96,165,250,0.2);
+      color: #e6eef8;
+      border: 1px solid rgba(96,165,250,0.3);
     }
     
     .btn-danger {
@@ -390,264 +277,357 @@
       color: white;
     }
     
-    .btn-danger:hover {
-      background: linear-gradient(135deg, var(--accent-red-hover), #b91c1c);
-      transform: translateY(-1px);
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
     
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    
-    .btn-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
-    
-    /* ================== 文件管理器样式 ================== */
-    .file-manager {
-      margin-top: 20px;
-    }
-    
-    .file-actions {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-    
+    /* ================== 文件列表样式 ================== */
     .file-list {
-      background: var(--glass);
-      border-radius: 10px;
+      background: rgba(7,16,38,0.4);
+      border-radius: 8px;
+      border: 1px solid rgba(96,165,250,0.2);
       overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.03);
+      max-height: 500px;
+      overflow-y: auto;
     }
     
     .file-item {
       display: flex;
       align-items: center;
       padding: 12px 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(96,165,250,0.1);
       transition: background 0.2s ease;
     }
     
     .file-item:hover {
-      background: rgba(96,165,250,0.05);
+      background: rgba(96,165,250,0.1);
     }
     
     .file-item:last-child {
       border-bottom: none;
     }
     
+    /* ================== 文件图标样式 ================== */
     .file-icon {
       margin-right: 12px;
       font-size: 20px;
-      color: var(--accent);
+      width: 24px;
+      text-align: center;
+      flex-shrink: 0;
     }
     
-    .file-info {
-      flex: 1;
-      min-width: 0;
+    /* 文件夹图标 */
+    .file-icon.folder::before {
+      content: "📁";
+    }
+    
+    /* 文本文档图标 */
+    .file-icon.text::before {
+      content: "📄";
+    }
+    
+    /* 音乐文件图标 */
+    .file-icon.music::before {
+      content: "🎵";
+    }
+    
+    /* 图片文件图标 */
+    .file-icon.image::before {
+      content: "🖼️";
+    }
+    
+    /* 压缩文件图标 */
+    .file-icon.archive::before {
+      content: "🗜️";
+    }
+    
+    /* 代码文件图标 */
+    .file-icon.code::before {
+      content: "💻";
+    }
+    
+    /* 其他文件图标 */
+    .file-icon.other::before {
+      content: "📎";
     }
     
     .file-name {
-      font-weight: 600;
-      color: #e6eef8;
-      margin-bottom: 4px;
+      flex: 1;
+      font-weight: 500;
       word-break: break-all;
-    }
-    
-    .file-meta {
-      font-size: 12px;
-      color: var(--muted);
     }
     
     .file-size {
       margin-right: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      flex-shrink: 0;
     }
     
-    .file-date {
-      font-size: 11px;
-    }
-    
-    .file-actions-cell {
+    .file-actions-small {
       display: flex;
       gap: 8px;
     }
     
-    .btn-icon {
-      padding: 6px 8px;
-      background: rgba(96,165,250,0.1);
-      border: 1px solid rgba(96,165,250,0.2);
+    .btn-small {
+      padding: 4px 8px;
+      font-size: 12px;
       border-radius: 4px;
-      color: var(--accent);
       cursor: pointer;
+      border: none;
       transition: all 0.2s ease;
     }
     
-    .btn-icon:hover {
-      background: rgba(96,165,250,0.2);
-      transform: translateY(-1px);
+    .btn-small.edit {
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-green-hover));
+      color: white;
     }
     
-    .btn-download {
-      color: var(--accent-green);
-      border-color: rgba(16,185,129,0.2);
-      background: rgba(16,185,129,0.1);
+    .btn-small.view {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
     }
     
-    .btn-delete {
-      color: var(--accent-red);
-      border-color: rgba(239,68,68,0.2);
-      background: rgba(239,68,68,0.1);
+    .btn-small.play {
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-purple-2));
+      color: white;
     }
     
-    .btn-view {
-      color: var(--accent-purple);
-      border-color: rgba(139,92,246,0.2);
-      background: rgba(139,92,246,0.1);
+    .btn-small.download {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
     }
     
-    /* ================== 加载状态 ================== */
-    .loading {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--muted);
+    .btn-small.delete {
+      background: linear-gradient(135deg, var(--accent-red), var(--accent-red-hover));
+      color: white;
     }
     
-    .loading-spinner {
-      display: inline-block;
-      width: 40px;
-      height: 40px;
-      border: 3px solid rgba(96,165,250,0.3);
-      border-radius: 50%;
-      border-top-color: var(--accent);
-      animation: spin 1s ease-in-out infinite;
+    /* ================== 文件编辑器样式 ================== */
+    .editor-section {
+      background: var(--glass);
+      padding: 16px 18px;
+      border-radius: 10px;
+      margin-top: 20px;
+      display: none;
+    }
+    
+    .editor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 16px;
     }
     
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    /* ================== 通知消息 ================== */
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 12px 20px;
-      border-radius: 8px;
-      background: rgba(7,16,38,0.9);
+    .editor-content textarea {
+      width: 100%;
+      height: 300px;
+      padding: 12px;
+      border-radius: 6px;
       border: 1px solid rgba(96,165,250,0.3);
-      backdrop-filter: blur(10px);
-      color: white;
-      z-index: 1000;
-      animation: slideIn 0.3s ease;
-      max-width: 300px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      background: rgba(7,16,38,0.4);
+      color: #e6eef8;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: vertical;
     }
     
-    .notification.success {
-      border-color: var(--accent-green);
-      background: rgba(6,78,59,0.9);
-    }
-    
-    .notification.error {
-      border-color: var(--accent-red);
-      background: rgba(127,29,29,0.9);
-    }
-    
-    .notification.warning {
-      border-color: var(--accent-orange);
-      background: rgba(146,64,14,0.9);
-    }
-    
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-    
-    /* ================== 状态指示器 ================== */
-    .status-indicator {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      margin-right: 6px;
-    }
-    
-    .status-online {
-      background: var(--accent-green);
-      box-shadow: 0 0 0 2px rgba(16,185,129,0.3);
-    }
-    
-    .status-offline {
-      background: var(--accent-red);
-      box-shadow: 0 0 0 2px rgba(239,68,68,0.3);
-    }
-    
-    /* ================== 文件上传区 ================== */
-    .upload-area {
-      border: 2px dashed rgba(96,165,250,0.3);
+    /* ================== 文件预览区样式 ================== */
+    .preview-section {
+      background: var(--glass);
+      padding: 16px 18px;
       border-radius: 10px;
-      padding: 30px;
-      text-align: center;
-      background: rgba(96,165,250,0.05);
+      margin-top: 20px;
+      display: none;
+    }
+    
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .preview-content {
+      max-height: 400px;
+      overflow-y: auto;
+      background: rgba(7,16,38,0.6);
+      border-radius: 6px;
+      padding: 16px;
+    }
+    
+    /* 图片预览样式 */
+    .preview-image {
+      max-width: 100%;
+      max-height: 300px;
+      display: block;
+      margin: 0 auto;
+      border-radius: 6px;
+    }
+    
+    /* 音乐播放器样式 */
+    .audio-player {
+      width: 100%;
       margin: 20px 0;
+      background: rgba(7,16,38,0.8);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    
+    .audio-player audio {
+      width: 100%;
+    }
+    
+    .audio-player .audio-info {
+      margin-top: 10px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    
+    /* ================== 模态框样式 ================== */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(2,6,23,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+      border: 1px solid rgba(255,255,255,0.03);
+      backdrop-filter: blur(12px);
+      max-width: 500px;
+      width: 90%;
+    }
+    
+    .modal-header {
+      margin-bottom: 20px;
+    }
+    
+    .modal-body {
+      margin-bottom: 20px;
+    }
+    
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    
+    /* ================== 上传区域样式 ================== */
+    .upload-area {
+      margin-top: 16px;
+      padding: 16px;
+      border: 2px dashed rgba(96,165,250,0.3);
+      border-radius: 8px;
+      text-align: center;
       cursor: pointer;
       transition: all 0.3s ease;
     }
     
     .upload-area:hover {
-      background: rgba(96,165,250,0.1);
       border-color: var(--accent);
+      background: rgba(96,165,250,0.05);
     }
     
     .upload-area.dragover {
-      background: rgba(96,165,250,0.15);
-      border-color: var(--accent-2);
-      transform: scale(1.02);
-    }
-    
-    .upload-area input {
-      display: none;
-    }
-    
-    .upload-icon {
-      font-size: 40px;
-      color: var(--accent);
-      margin-bottom: 10px;
+      border-color: var(--accent-green);
+      background: rgba(16,185,129,0.05);
     }
     
     .upload-text {
       color: var(--muted);
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     
-    .upload-hint {
-      font-size: 12px;
-      color: rgba(230,238,248,0.5);
+    .upload-button {
+      display: inline-block;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
     
-    /* ================== 响应式调整 ================== */
-    @media (max-width: 640px) {
-      .mode-btn {
-        min-width: 100%;
-      }
-      
-      .file-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-      }
-      
-      .file-actions-cell {
-        width: 100%;
-        justify-content: flex-end;
-      }
+    .upload-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(96,165,250,0.3);
+    }
+    
+    .upload-file-list {
+      margin-top: 12px;
+      display: none;
+    }
+    
+    .upload-file-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px;
+      background: rgba(96,165,250,0.1);
+      border-radius: 4px;
+      margin-bottom: 4px;
+    }
+    
+    /* ================== 可折叠的使用说明 ================== */
+    .help-toggle {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .help-toggle:hover {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+    
+    .help-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      color: #10B981;
+      font-size: 15px;
+    }
+    
+    .help-icon {
+      transition: transform 0.3s ease;
+      font-size: 18px;
+    }
+    
+    .help-toggle.active .help-icon {
+      transform: rotate(180deg);
+    }
+    
+    .help-content {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: all 0.3s ease;
+      margin-top: 0;
+    }
+    
+    .help-content.show {
+      max-height: 500px;
+      opacity: 1;
+      margin-top: 12px;
     }
   </style>
 </head>
@@ -655,637 +635,779 @@
   <div class="wrap">
     <header>
       <div class="avatar">
-        <img id="avatarImg" src="https://avatars.githubusercontent.com/u/99296962?v=4" 
-             onerror="this.style.display='none'" 
-             onload="this.classList.add('loaded')" class="avatar-img">
+        <!-- ================== 注释：修改头像URL的地方 ================== -->
+        <img class="avatar-img" src="https://i.mituw.com/imgs/2026/03/15/de4945abb96be550.jpg" alt="头像" />
         <div class="avatar-fallback">S3</div>
       </div>
       <div class="title-container">
-        <h1>双模式文件管理器</h1>
-        <div class="subtitle">
-          GitHub仓库模式 <span class="status-indicator status-online"></span> | 云存储模式 <span class="status-indicator status-online"></span>
-        </div>
+        <h1>GitHub 文件管理器</h1>
+        <div class="subtitle">Small 3 的GitHub文件管理系统</div>
       </div>
     </header>
     
-    <div class="content">
-      <!-- 模式选择器 -->
-      <div class="mode-selector">
-        <button class="mode-btn github-mode active" data-mode="github">
-          <i>📦</i> GitHub仓库模式
-        </button>
-        <button class="mode-btn cloud-mode" data-mode="cloud">
-          <i>☁️</i> 云存储模式
-        </button>
-      </div>
-      
-      <!-- GitHub模式配置 -->
-      <div class="config-section" id="githubConfig">
-        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-          <i>⚙️</i>
-          <strong>GitHub配置</strong>
-        </div>
-        <div class="config-info">
-          <div class="config-item">
-            <div class="config-label">GitHub Token</div>
-            <div class="config-value">
-              <input type="text" id="githubToken" placeholder="请输入你的GitHub Token">
-            </div>
-          </div>
-          <div class="config-item">
-            <div class="config-label">仓库名</div>
-            <div class="config-value">
-              <input type="text" id="githubRepo" placeholder="username/repository">
-            </div>
-          </div>
-          <div class="config-item">
-            <div class="config-label">分支</div>
-            <div class="config-value">
-              <input type="text" id="githubBranch" value="main" placeholder="main">
-            </div>
+    <!-- 配置信息区域 -->
+    <div class="config-section">
+      <div class="config-info">
+        <div class="config-item">
+          <div class="config-label">GitHub用户名</div>
+          <div class="config-value">
+            <!-- ================== 注释：显示锁定用户名的地方 ================== -->
+            <div class="locked">small534460</div>
           </div>
         </div>
-        <div class="btn-group">
-          <button class="btn btn-primary" onclick="saveConfig('github')">保存配置</button>
-          <button class="btn btn-secondary" onclick="testGitHubConnection()">测试连接</button>
-          <button class="btn btn-success" onclick="loadGitHubFiles()">刷新文件</button>
+        <div class="config-item">
+          <div class="config-label">仓库名称</div>
+          <div class="config-value">
+            <!-- ================== 注释：显示锁定仓库名的地方 ================== -->
+            <div class="locked">wjcf</div>
+          </div>
+        </div>
+        <div class="config-item">
+          <div class="config-label">访问令牌</div>
+          <div class="config-value">
+            <!-- ================== 注释：这里输入你的GitHub访问令牌 ================== -->
+            <input type="password" id="token" placeholder="输入GitHub访问令牌">
+          </div>
+        </div>
+        <div class="config-item">
+          <div class="config-label">分支</div>
+          <div class="config-value">
+            <!-- ================== 注释：分支固定为main，不显示输入框 ================== -->
+            <div class="locked">main</div>
+          </div>
         </div>
       </div>
-      
-      <!-- 云存储模式配置 -->
-      <div class="config-section hidden" id="cloudConfig">
-        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-          <i>⚙️</i>
-          <strong>云存储配置</strong>
-        </div>
-        <div class="config-info">
-          <div class="config-item">
-            <div class="config-label">GoIndex/网盘地址</div>
-            <div class="config-value">
-              <input type="text" id="cloudUrl" placeholder="https://example.com">
-            </div>
-          </div>
-          <div class="config-item">
-            <div class="config-label">访问密码（如有）</div>
-            <div class="config-value">
-              <input type="password" id="cloudPassword" placeholder="可选">
-            </div>
-          </div>
-          <div class="config-item">
-            <div class="config-label">根目录路径</div>
-            <div class="config-value">
-              <input type="text" id="cloudPath" placeholder="/" value="/">
-            </div>
-          </div>
-        </div>
-        <div class="btn-group">
-          <button class="btn btn-primary" onclick="saveConfig('cloud')">保存配置</button>
-          <button class="btn btn-secondary" onclick="testCloudConnection()">测试连接</button>
-          <button class="btn btn-success" onclick="loadCloudFiles()">刷新文件</button>
-        </div>
+      <div class="config-actions">
+        <button class="btn btn-primary" onclick="loadFiles()">加载文件</button>
+        <button class="btn btn-secondary" onclick="saveConfig()">保存配置</button>
       </div>
-      
-      <!-- 文件管理器区域 -->
-      <div class="file-manager" id="fileManager">
+    </div>
+    
+    <!-- 使用说明 -->
+    <div class="help-toggle" onclick="toggleHelp()">
+      <div class="help-header">
+        <span>使用说明</span>
+        <span class="help-icon">▼</span>
+      </div>
+      <div class="help-content" id="helpContent">
+        <p>1. 在"访问令牌"输入框中输入你的GitHub Personal Access Token</p>
+        <p>2. 点击"加载文件"按钮查看文件列表</p>
+        <p>3. 不同文件类型有不同的操作：</p>
+        <ul style="margin-left: 20px;">
+          <li>📄 文本文件：可编辑</li>
+          <li>🎵 音乐文件：可在网站内播放</li>
+          <li>🖼️ 图片文件：可在网站内查看</li>
+          <li>📁 文件夹：可进入并上传文件</li>
+          <li>📎 所有文件：都有下载功能</li>
+        </ul>
+        <p>4. 新建文件夹功能错误，请点击新建文件功能，格式是***/**.keep</p>
+        <p>5. 要上传文件到文件夹，请先进入文件夹，然后使用上传区域</p>
+      </div>
+    </div>
+    
+    <!-- 文件管理器区域 -->
+    <div class="file-manager-section">
+      <div class="file-manager-header">
+        <h3 style="margin: 0;">文件管理器</h3>
         <div class="file-actions">
-          <button class="btn btn-warning" onclick="createFolder()">
-            <i>📁</i> 新建文件夹
+          <button class="btn btn-primary" onclick="showCreateFolderModal()">
+            <span>📁</span> 新建文件夹
           </button>
-          <button class="btn btn-success" onclick="uploadFile()">
-            <i>📤</i> 上传文件
+          <button class="btn btn-primary" onclick="showCreateFileModal()">
+            <span>📄</span> 新建文件
           </button>
-          <div style="flex: 1"></div>
-          <div style="color: var(--muted); font-size: 13px;">
-            当前模式: <span id="currentMode">GitHub仓库模式</span>
-          </div>
+          <button class="btn btn-secondary" onclick="loadFiles()">
+            <span>🔄</span> 刷新
+          </button>
         </div>
-        
-        <div class="upload-area" id="uploadArea" onclick="triggerFileInput()">
-          <div class="upload-icon">📁</div>
-          <div class="upload-text">点击或拖拽文件到此处上传</div>
-          <div class="upload-hint">支持大文件上传到云存储</div>
-          <input type="file" id="fileInput" multiple onchange="handleFileSelect(event)">
-        </div>
-        
-        <div class="file-list" id="fileList">
-          <div class="loading">
-            <div class="loading-spinner"></div>
-            <div>加载中...</div>
-          </div>
+      </div>
+      
+      <!-- 文件路径面包屑 -->
+      <div id="breadcrumb" style="margin-bottom: 12px; font-size: 14px;">
+        <span style="color: var(--muted);">路径: </span>
+        <span id="currentPath" style="font-weight: 600;">/</span>
+      </div>
+      
+      <!-- 上传区域 -->
+      <div class="upload-area" id="uploadArea" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)">
+        <div class="upload-text">拖放文件到此处或点击上传</div>
+        <input type="file" id="fileInput" multiple style="display: none;" onchange="handleFileSelect(event)">
+        <div class="upload-button" onclick="document.getElementById('fileInput').click()">选择文件</div>
+        <div class="upload-file-list" id="uploadFileList"></div>
+      </div>
+      
+      <!-- 文件列表 -->
+      <div class="file-list" id="fileList">
+        <!-- 文件项将通过JavaScript动态生成 -->
+        <div class="file-item" style="text-align: center; color: var(--muted);">
+          <span>点击"加载文件"按钮查看文件列表</span>
         </div>
       </div>
     </div>
+    
+    <!-- 文件编辑器区域 -->
+    <div class="editor-section" id="editorSection">
+      <div class="editor-header">
+        <h4 id="editorTitle" style="margin: 0;">编辑文件</h4>
+        <div class="file-actions">
+          <button class="btn btn-primary" onclick="saveFile()">保存</button>
+          <button class="btn btn-secondary" onclick="closeEditor()">取消</button>
+        </div>
+      </div>
+      <div class="editor-content">
+        <textarea id="fileContent" placeholder="在这里输入文件内容..."></textarea>
+      </div>
+    </div>
+    
+    <!-- 文件预览区域 -->
+    <div class="preview-section" id="previewSection">
+      <div class="preview-header">
+        <h4 id="previewTitle" style="margin: 0;">文件预览</h4>
+        <div class="file-actions">
+          <button class="btn btn-primary" onclick="downloadCurrentFile()">下载</button>
+          <button class="btn btn-secondary" onclick="closePreview()">关闭</button>
+        </div>
+      </div>
+      <div class="preview-content" id="previewContent">
+        <!-- 预览内容将动态填充 -->
+      </div>
+    </div>
   </div>
-
-  <script>
-    // 当前模式
-    let currentMode = 'github'; // 'github' 或 'cloud'
-    
-    // 配置文件
-    let config = {
-      github: {
-        token: '',
-        repo: '',
-        branch: 'main'
-      },
-      cloud: {
-        url: '',
-        password: '',
-        path: '/'
-      }
-    };
-    
-    // 初始化
-    document.addEventListener('DOMContentLoaded', function() {
-      // 从本地存储加载配置
-      loadConfig();
-      
-      // 设置模式切换事件
-      document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-          switchMode(this.dataset.mode);
-        });
-      });
-      
-      // 初始化上传区域拖放功能
-      initUploadArea();
-      
-      // 自动测试GitHub连接
-      if (config.github.token && config.github.repo) {
-        setTimeout(() => testGitHubConnection(), 1000);
-      }
-    });
-    
-    // 模式切换函数
-    function switchMode(mode) {
-      currentMode = mode;
-      
-      // 更新按钮状态
-      document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.mode === mode);
-      });
-      
-      // 更新配置显示
-      document.getElementById('githubConfig').classList.toggle('hidden', mode !== 'github');
-      document.getElementById('cloudConfig').classList.toggle('hidden', mode !== 'cloud');
-      
-      // 更新当前模式显示
-      document.getElementById('currentMode').textContent = 
-        mode === 'github' ? 'GitHub仓库模式' : '云存储模式';
-      
-      // 加载对应模式的文件列表
-      if (mode === 'github' && config.github.token && config.github.repo) {
-        loadGitHubFiles();
-      } else if (mode === 'cloud' && config.cloud.url) {
-        loadCloudFiles();
-      }
-    }
-    
-    // 保存配置
-    function saveConfig(mode) {
-      if (mode === 'github') {
-        config.github = {
-          token: document.getElementById('githubToken').value,
-          repo: document.getElementById('githubRepo').value,
-          branch: document.getElementById('githubBranch').value || 'main'
-        };
-      } else {
-        config.cloud = {
-          url: document.getElementById('cloudUrl').value,
-          password: document.getElementById('cloudPassword').value,
-          path: document.getElementById('cloudPath').value || '/'
-        };
-      }
-      
-      localStorage.setItem('fileManagerConfig', JSON.stringify(config));
-      showNotification('配置已保存', 'success');
-    }
-    
-    // 加载配置
-    function loadConfig() {
-      const saved = localStorage.getItem('fileManagerConfig');
-      if (saved) {
-        config = JSON.parse(saved);
-        document.getElementById('githubToken').value = config.github.token || '';
-        document.getElementById('githubRepo').value = config.github.repo || '';
-        document.getElementById('githubBranch').value = config.github.branch || 'main';
-        document.getElementById('cloudUrl').value = config.cloud.url || '';
-        document.getElementById('cloudPassword').value = config.cloud.password || '';
-        document.getElementById('cloudPath').value = config.cloud.path || '/';
-      }
-    }
-    
-    // 测试GitHub连接
-    async function testGitHubConnection() {
-      const token = document.getElementById('githubToken').value;
-      const repo = document.getElementById('githubRepo').value;
-      
-      if (!token || !repo) {
-        showNotification('请填写GitHub Token和仓库名', 'error');
-        return;
-      }
-      
-      try {
-        showNotification('测试连接中...', 'warning');
-        
-        const response = await fetch(`https://api.github.com/repos/${repo}`, {
-          headers: {
-            'Authorization': `token ${token}`,
-            'Accept': 'application/vnd.github.v3+json'
-          }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          showNotification(`连接成功！仓库: ${data.name}`, 'success');
-        } else {
-          throw new Error('连接失败');
-        }
-      } catch (error) {
-        showNotification('连接失败，请检查配置', 'error');
-      }
-    }
-    
-    // 测试云存储连接
-    async function testCloudConnection() {
-      const url = document.getElementById('cloudUrl').value;
-      
-      if (!url) {
-        showNotification('请填写云存储地址', 'error');
-        return;
-      }
-      
-      try {
-        showNotification('测试连接中...', 'warning');
-        
-        // 这里需要根据你的GoIndex/云存储API进行调整
-        const testUrl = `${url.replace(/\/$/, '')}/api/status`; // 示例API端点
-        const response = await fetch(testUrl);
-        
-        if (response.ok) {
-          showNotification('连接成功！', 'success');
-        } else {
-          // 尝试其他可能的API端点
-          const altResponse = await fetch(url);
-          if (altResponse.ok) {
-            showNotification('连接成功！', 'success');
-          } else {
-            throw new Error('连接失败');
-          }
-        }
-      } catch (error) {
-        showNotification('连接失败，请检查地址是否正确', 'error');
-      }
-    }
-    
-    // 加载GitHub文件列表
-    async function loadGitHubFiles() {
-      if (!config.github.token || !config.github.repo) {
-        showNotification('请先配置GitHub信息', 'error');
-        return;
-      }
-      
-      showNotification('加载GitHub文件列表中...', 'warning');
-      
-      try {
-        const response = await fetch(
-          `https://api.github.com/repos/${config.github.repo}/contents?ref=${config.github.branch}`, 
-          {
-            headers: {
-              'Authorization': `token ${config.github.token}`,
-              'Accept': 'application/vnd.github.v3+json'
-            }
-          }
-        );
-        
-        if (response.ok) {
-          const files = await response.json();
-          renderFileList(files, 'github');
-          showNotification('文件列表已更新', 'success');
-        } else {
-          throw new Error('加载失败');
-        }
-      } catch (error) {
-        showNotification('加载失败，请检查配置', 'error');
-      }
-    }
-    
-    // 加载云存储文件列表
-    async function loadCloudFiles() {
-      if (!config.cloud.url) {
-        showNotification('请先配置云存储地址', 'error');
-        return;
-      }
-      
-      showNotification('加载云存储文件列表中...', 'warning');
-      
-      try {
-        // 这里需要根据你的GoIndex/云存储API进行调整
-        // 以下是一个示例，你需要根据实际的API修改
-        const url = `${config.cloud.url.replace(/\/$/, '')}/api/list?path=${encodeURIComponent(config.cloud.path)}`;
-        
-        const headers = {};
-        if (config.cloud.password) {
-          headers['Authorization'] = `Bearer ${config.cloud.password}`;
-        }
-        
-        const response = await fetch(url, { headers });
-        
-        if (response.ok) {
-          const data = await response.json();
-          // 假设API返回的数据结构是 { files: [] }
-          const files = data.files || data.data || data;
-          renderFileList(files, 'cloud');
-          showNotification('文件列表已更新', 'success');
-        } else {
-          // 尝试另一种常见的API格式
-          const altResponse = await fetch(config.cloud.url);
-          if (altResponse.ok) {
-            const text = await altResponse.text();
-            // 如果是HTML页面，可能需要解析DOM
-            showNotification('成功连接到云存储，但需要解析页面', 'warning');
-            
-            // 这里可以添加HTML解析逻辑
-            // 或者提示用户使用正确的API地址
-            showNotification('请确保使用正确的API地址', 'error');
-          } else {
-            throw new Error('连接失败');
-          }
-        }
-      } catch (error) {
-        showNotification('加载失败：' + error.message, 'error');
-      }
-    }
-    
-    // 渲染文件列表
-    function renderFileList(files, mode) {
-      const fileList = document.getElementById('fileList');
-      
-      if (!files || files.length === 0) {
-        fileList.innerHTML = '<div class="loading">暂无文件</div>';
-        return;
-      }
-      
-      let html = '';
-      
-      files.forEach(file => {
-        const isDir = file.type === 'dir' || (mode === 'cloud' && file.type === 'folder');
-        const icon = isDir ? '📁' : getFileIcon(file.name);
-        const size = formatFileSize(file.size);
-        const date = formatDate(file.updated_at || file.mtime || file.lastModified);
-        
-        html += `
-          <div class="file-item">
-            <div class="file-icon">${icon}</div>
-            <div class="file-info">
-              <div class="file-name">${file.name}</div>
-              <div class="file-meta">
-                ${isDir ? '<span class="file-type">文件夹</span>' : `<span class="file-size">${size}</span>`}
-                <span class="file-date">${date}</span>
-              </div>
-            </div>
-            <div class="file-actions-cell">
-              ${isDir ? 
-                `<button class="btn-icon btn-view" onclick="enterFolder('${file.name}', '${mode}')">打开</button>` :
-                `<button class="btn-icon btn-download" onclick="downloadFile('${file.name}', '${file.download_url || file.url}', '${mode}')">下载</button>`
-              }
-              <button class="btn-icon btn-delete" onclick="deleteFile('${file.name}', '${file.path || file.name}', '${mode}')">删除</button>
-            </div>
+  
+  <!-- 新建文件夹模态框 -->
+  <div class="modal" id="folderModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="margin: 0;">新建文件夹</h3>
+      </div>
+      <div class="modal-body">
+        <div class="config-item">
+          <div class="config-label">文件夹名称</div>
+          <div class="config-value">
+            <input type="text" id="folderName" placeholder="输入文件夹名称">
           </div>
-        `;
-      });
-      
-      fileList.innerHTML = html;
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('folderModal')">取消</button>
+        <button class="btn btn-primary" onclick="createFolder()">创建</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 新建文件模态框 -->
+  <div class="modal" id="fileModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="margin: 0;">新建文件</h3>
+      </div>
+      <div class="modal-body">
+        <div class="config-item">
+          <div class="config-label">文件名称</div>
+          <div class="config-value">
+            <input type="text" id="fileName" placeholder="输入文件名称（包括扩展名）">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('fileModal')">取消</button>
+        <button class="btn btn-primary" onclick="createFile()">创建</button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // ================== 全局变量 ==================
+    let currentPath = '';
+    let currentFile = null;
+    let currentPreviewFile = null;
+    
+    // ================== 工具函数 ==================
+    function showModal(modalId) {
+      document.getElementById(modalId).style.display = 'flex';
     }
     
-    // 获取文件图标
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+      if (modalId === 'folderModal') {
+        document.getElementById('folderName').value = '';
+      } else if (modalId === 'fileModal') {
+        document.getElementById('fileName').value = '';
+      }
+    }
+    
+    function toggleHelp() {
+      const helpContent = document.getElementById('helpContent');
+      const helpToggle = document.querySelector('.help-toggle');
+      helpContent.classList.toggle('show');
+      helpToggle.classList.toggle('active');
+    }
+    
+    // ================== 文本编码修复函数 ==================
+    function decodeBase64Content(base64Content) {
+      try {
+        const binaryString = atob(base64Content);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        return new TextDecoder('utf-8').decode(bytes);
+      } catch (error) {
+        try {
+          return atob(base64Content);
+        } catch (e) {
+          return "无法解码文件内容";
+        }
+      }
+    }
+    
+    // ================== 文件类型判断函数 ==================
     function getFileIcon(filename) {
       const ext = filename.split('.').pop().toLowerCase();
-      const icons = {
-        txt: '📝', pdf: '📕', doc: '📘', docx: '📘',
-        xls: '📗', xlsx: '📗', ppt: '📙', pptx: '📙',
-        zip: '🗜️', rar: '🗜️', '7z': '🗜️',
-        mp3: '🎵', wav: '🎵', m4a: '🎵',
-        mp4: '🎬', avi: '🎬', mkv: '🎬',
-        jpg: '🖼️', jpeg: '🖼️', png: '🖼️', gif: '🖼️',
-        html: '🌐', js: '📜', css: '🎨', json: '📋'
+      
+      const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'];
+      const musicExts = ['mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac'];
+      const archiveExts = ['zip', 'rar', '7z', 'tar', 'gz', 'bz2'];
+      const textExts = ['txt', 'md', 'js', 'html', 'css', 'json', 'xml', 'yml', 'yaml', 'ini', 'log'];
+      
+      if (ext === '') return 'folder';
+      if (imageExts.includes(ext)) return 'image';
+      if (musicExts.includes(ext)) return 'music';
+      if (archiveExts.includes(ext)) return 'archive';
+      if (textExts.includes(ext)) return 'text';
+      if (['js', 'html', 'css', 'json', 'xml', 'py', 'java', 'cpp', 'c', 'php', 'rb', 'go'].includes(ext)) return 'code';
+      
+      return 'other';
+    }
+    
+    // ================== 配置管理 ==================
+    function saveConfig() {
+      const config = {
+        token: document.getElementById('token').value
       };
-      return icons[ext] || '📄';
+      localStorage.setItem('githubFileManagerConfig', JSON.stringify(config));
+      alert('配置已保存！');
     }
     
-    // 格式化文件大小
-    function formatFileSize(bytes) {
-      if (bytes === 0 || !bytes) return '0 B';
-      const k = 1024;
-      const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-    
-    // 格式化日期
-    function formatDate(dateString) {
-      if (!dateString) return '';
-      const date = new Date(dateString);
-      return date.toLocaleDateString('zh-CN');
-    }
-    
-    // 进入文件夹
-    function enterFolder(folderName, mode) {
-      if (mode === 'github') {
-        // GitHub进入子文件夹逻辑
-        showNotification(`进入文件夹: ${folderName}`, 'warning');
-        // 这里需要实现GitHub的文件夹导航
-      } else {
-        // 云存储进入子文件夹
-        config.cloud.path = `${config.cloud.path.replace(/\/$/, '')}/${folderName}`;
-        document.getElementById('cloudPath').value = config.cloud.path;
-        saveConfig('cloud');
-        loadCloudFiles();
+    function loadConfig() {
+      const savedConfig = localStorage.getItem('githubFileManagerConfig');
+      if (savedConfig) {
+        const config = JSON.parse(savedConfig);
+        document.getElementById('token').value = config.token || '';
       }
     }
     
-    // 下载文件
-    function downloadFile(filename, url, mode) {
-      if (mode === 'github') {
-        // GitHub文件下载
-        if (!url) {
-          url = `https://raw.githubusercontent.com/${config.github.repo}/${config.github.branch}/${filename}`;
+    // ================== GitHub API 函数 ==================
+    async function githubApiRequest(endpoint, method = 'GET', data = null) {
+      const username = 'small534460';
+      const token = document.getElementById('token').value;
+      const repo = 'wjcf';
+      const branch = 'main';
+      
+      if (!token) {
+        alert('请先输入GitHub访问令牌！');
+        return null;
+      }
+      
+      const url = `https://api.github.com/repos/${username}/${repo}/${endpoint}`;
+      const headers = {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json'
+      };
+      
+      const options = {
+        method: method,
+        headers: headers
+      };
+      
+      if (data) {
+        options.body = JSON.stringify(data);
+      }
+      
+      try {
+        const response = await fetch(url, options);
+        if (response.status === 204) {
+          return null;
         }
-        window.open(url, '_blank');
-      } else {
-        // 云存储文件下载
-        // 这里需要根据你的云存储API生成下载链接
-        const downloadUrl = `${config.cloud.url.replace(/\/$/, '')}/download?path=${encodeURIComponent(config.cloud.path + '/' + filename)}`;
-        window.open(downloadUrl, '_blank');
+        if (!response.ok) {
+          throw new Error(`GitHub API错误: ${response.status}`);
+        }
+        return await response.json();
+      } catch (error) {
+        console.error('API请求失败:', error);
+        alert(`请求失败: ${error.message}`);
+        return null;
       }
     }
     
-    // 删除文件
-    async function deleteFile(filename, path, mode) {
-      if (!confirm(`确定要删除 ${filename} 吗？`)) return;
+    // ================== 文件操作函数 ==================
+    async function loadFiles(path = '') {
+      currentPath = path;
+      document.getElementById('currentPath').textContent = path || '/';
       
-      if (mode === 'github') {
-        showNotification('GitHub文件删除功能需要API支持', 'warning');
-        // GitHub删除文件需要额外的API调用
-      } else {
-        showNotification('云存储文件删除功能需要API支持', 'warning');
+      const token = document.getElementById('token').value;
+      
+      if (!token) {
+        alert('请先输入GitHub访问令牌！');
+        return;
+      }
+      
+      const fileList = document.getElementById('fileList');
+      fileList.innerHTML = '<div class="file-item" style="text-align: center; color: var(--muted);"><span>加载中...</span></div>';
+      
+      try {
+        const endpoint = path ? `contents/${path}` : 'contents';
+        const contents = await githubApiRequest(endpoint);
+        
+        if (!contents) {
+          fileList.innerHTML = '<div class="file-item" style="text-align: center; color: var(--muted);"><span>文件夹为空或发生错误</span></div>';
+          return;
+        }
+        
+        fileList.innerHTML = '';
+        
+        if (path) {
+          const parentItem = document.createElement('div');
+          parentItem.className = 'file-item';
+          parentItem.innerHTML = `
+            <div class="file-icon folder"></div>
+            <div class="file-name" style="font-style: italic;">.. (返回上一级)</div>
+          `;
+          parentItem.onclick = () => {
+            const parentPath = path.split('/').slice(0, -1).join('/');
+            loadFiles(parentPath);
+          };
+          fileList.appendChild(parentItem);
+        }
+        
+        contents.forEach(item => {
+          const fileItem = document.createElement('div');
+          fileItem.className = 'file-item';
+          
+          const fileType = item.type === 'dir' ? 'folder' : getFileIcon(item.name);
+          const fileIconClass = `file-icon ${fileType}`;
+          
+          if (item.type === 'dir') {
+            fileItem.innerHTML = `
+              <div class="${fileIconClass}"></div>
+              <div class="file-name">${item.name}/</div>
+              <div class="file-size">文件夹</div>
+              <div class="file-actions-small">
+                <button class="btn-small view" onclick="event.stopPropagation(); loadFiles('${item.path}')">打开</button>
+                <button class="btn-small delete" onclick="event.stopPropagation(); deleteItem('${item.path}', true)">删除</button>
+              </div>
+            `;
+            fileItem.onclick = () => loadFiles(item.path);
+          } else {
+            const fileExt = item.name.split('.').pop().toLowerCase();
+            const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'].includes(fileExt);
+            const isMusic = ['mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac'].includes(fileExt);
+            const isText = ['txt', 'md', 'js', 'html', 'css', 'json', 'xml', 'yml', 'yaml', 'ini', 'log'].includes(fileExt);
+            
+            let actionButtons = '';
+            if (isText) {
+              actionButtons = `
+                <button class="btn-small edit" onclick="event.stopPropagation(); editFile('${item.path}', '${item.name}')">编辑</button>
+                <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
+              `;
+            } else if (isMusic) {
+              actionButtons = `
+                <button class="btn-small play" onclick="event.stopPropagation(); previewFile('${item.path}', '${item.name}', 'music')">播放</button>
+                <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
+              `;
+            } else if (isImage) {
+              actionButtons = `
+                <button class="btn-small view" onclick="event.stopPropagation(); previewFile('${item.path}', '${item.name}', 'image')">查看</button>
+                <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
+              `;
+            } else {
+              actionButtons = `
+                <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
+              `;
+            }
+            
+            const sizeKB = Math.round(item.size / 1024 * 100) / 100;
+            
+            fileItem.innerHTML = `
+              <div class="${fileIconClass}"></div>
+              <div class="file-name">${item.name}</div>
+              <div class="file-size">${sizeKB} KB</div>
+              <div class="file-actions-small">
+                ${actionButtons}
+                <button class="btn-small delete" onclick="event.stopPropagation(); deleteItem('${item.path}', false)">删除</button>
+              </div>
+            `;
+            
+            if (isText) {
+              fileItem.onclick = () => editFile(item.path, item.name);
+            } else if (isMusic || isImage) {
+              fileItem.onclick = () => previewFile(item.path, item.name, isMusic ? 'music' : 'image');
+            } else {
+              fileItem.onclick = () => downloadFile(item.path, item.name);
+            }
+          }
+          
+          fileList.appendChild(fileItem);
+        });
+        
+        if (contents.length === 0) {
+          fileList.innerHTML = '<div class="file-item" style="text-align: center; color: var(--muted);"><span>文件夹为空</span></div>';
+        }
+      } catch (error) {
+        console.error('加载文件失败:', error);
+        fileList.innerHTML = '<div class="file-item" style="text-align: center; color: var(--muted);"><span>加载失败，请检查配置</span></div>';
       }
     }
     
-    // 上传文件
-    function uploadFile() {
-      document.getElementById('fileInput').click();
+    async function previewFile(path, name, type) {
+      currentPreviewFile = { path, name, type };
+      
+      try {
+        const file = await githubApiRequest(`contents/${path}`);
+        if (file && file.download_url) {
+          document.getElementById('previewTitle').textContent = `预览文件: ${name}`;
+          document.getElementById('previewSection').style.display = 'block';
+          document.getElementById('editorSection').style.display = 'none';
+          
+          const previewContent = document.getElementById('previewContent');
+          
+          if (type === 'image') {
+            // 修复图片预览问题
+            previewContent.innerHTML = `
+              <img src="${file.download_url}" alt="${name}" class="preview-image" onerror="this.onerror=null;this.src='${file.download_url}'">
+              <p style="text-align: center; margin-top: 10px; color: var(--muted);">${name}</p>
+            `;
+          } else if (type === 'music') {
+            previewContent.innerHTML = `
+              <div class="audio-player">
+                <audio controls>
+                  <source src="${file.download_url}" type="audio/mpeg">
+                  您的浏览器不支持音频播放
+                </audio>
+                <div class="audio-info">正在播放: ${name}</div>
+              </div>
+            `;
+          } else {
+            const content = decodeBase64Content(file.content.replace(/\s/g, ''));
+            previewContent.innerHTML = `
+              <pre style="white-space: pre-wrap; word-break: break-all; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;">${content}</pre>
+            `;
+          }
+        }
+      } catch (error) {
+        console.error('预览文件失败:', error);
+        alert('无法预览文件');
+      }
     }
     
-    // 触发文件输入
-    function triggerFileInput() {
-      document.getElementById('fileInput').click();
+    function closePreview() {
+      document.getElementById('previewSection').style.display = 'none';
+      currentPreviewFile = null;
     }
     
-    // 初始化上传区域
-    function initUploadArea() {
-      const uploadArea = document.getElementById('uploadArea');
+    function downloadCurrentFile() {
+      if (currentPreviewFile) {
+        downloadFile(currentPreviewFile.path, currentPreviewFile.name);
+      }
+    }
+    
+    async function downloadFile(path, name) {
+      try {
+        const file = await githubApiRequest(`contents/${path}`);
+        if (file && file.download_url) {
+          const link = document.createElement('a');
+          link.href = file.download_url;
+          link.download = name;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      } catch (error) {
+        console.error('下载文件失败:', error);
+        alert('无法下载文件');
+      }
+    }
+    
+    function editFile(path, name) {
+      currentFile = path;
+      document.getElementById('editorTitle').textContent = `编辑文件: ${name}`;
+      document.getElementById('editorSection').style.display = 'block';
+      document.getElementById('previewSection').style.display = 'none';
+      document.getElementById('fileContent').value = '';
       
-      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        uploadArea.addEventListener(eventName, preventDefaults, false);
-      });
-      
-      function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
+      loadFileContent(path, name);
+    }
+    
+    async function loadFileContent(path, name) {
+      try {
+        const file = await githubApiRequest(`contents/${path}`);
+        if (file && file.content) {
+          const content = decodeBase64Content(file.content.replace(/\s/g, ''));
+          document.getElementById('fileContent').value = content;
+        }
+      } catch (error) {
+        console.error('加载文件内容失败:', error);
+        alert('无法读取文件内容');
+      }
+    }
+    
+    function closeEditor() {
+      document.getElementById('editorSection').style.display = 'none';
+      currentFile = null;
+      document.getElementById('fileContent').value = '';
+    }
+    
+    async function saveFile() {
+      if (!currentFile) {
+        alert('没有要保存的文件');
+        return;
       }
       
-      ['dragenter', 'dragover'].forEach(eventName => {
-        uploadArea.addEventListener(eventName, () => {
-          uploadArea.classList.add('dragover');
-        }, false);
-      });
+      const content = document.getElementById('fileContent').value;
       
-      ['dragleave', 'drop'].forEach(eventName => {
-        uploadArea.addEventListener(eventName, () => {
-          uploadArea.classList.remove('dragover');
-        }, false);
-      });
-      
-      uploadArea.addEventListener('drop', handleDrop, false);
+      try {
+        const fileInfo = await githubApiRequest(`contents/${currentFile}`);
+        
+        const data = {
+          message: `更新文件 ${currentFile.split('/').pop()}`,
+          content: btoa(unescape(encodeURIComponent(content))),
+          sha: fileInfo.sha,
+          branch: 'main'
+        };
+        
+        const result = await githubApiRequest(`contents/${currentFile}`, 'PUT', data);
+        if (result) {
+          alert('文件保存成功！');
+          closeEditor();
+          loadFiles(currentPath);
+        }
+      } catch (error) {
+        console.error('保存文件失败:', error);
+        alert('保存文件失败，可能是权限问题');
+      }
     }
     
-    // 处理拖放
+    // ================== 文件夹操作函数 ==================
+    function showCreateFolderModal() {
+      showModal('folderModal');
+    }
+    
+    async function createFolder() {
+      const folderName = document.getElementById('folderName').value.trim();
+      if (!folderName) {
+        alert('请输入文件夹名称');
+        return;
+      }
+      
+      // 修复新建文件夹功能 - 确保路径正确
+      const folderPath = currentPath ? `${currentPath}/${folderName}` : folderName;
+      const filePath = `${folderPath}/.gitkeep`;
+      
+      const data = {
+        message: `创建文件夹 ${folderName}`,
+        content: btoa('# 空文件夹占位文件'),
+        branch: 'main'
+      };
+      
+      try {
+        const result = await githubApiRequest(`contents/${filePath}`, 'PUT', data);
+        if (result) {
+          alert('文件夹创建成功！');
+          closeModal('folderModal');
+          loadFiles(currentPath);
+        }
+      } catch (error) {
+        console.error('创建文件夹失败:', error);
+        alert('创建文件夹失败，可能已存在同名文件夹');
+      }
+    }
+    
+    function showCreateFileModal() {
+      showModal('fileModal');
+    }
+    
+    async function createFile() {
+      const fileName = document.getElementById('fileName').value.trim();
+      if (!fileName) {
+        alert('请输入文件名称');
+        return;
+      }
+      
+      const filePath = currentPath ? `${currentPath}/${fileName}` : fileName;
+      const content = `# ${fileName}\n\n这是一个新文件，请在此处编写内容。`;
+      
+      const data = {
+        message: `创建文件 ${fileName}`,
+        content: btoa(unescape(encodeURIComponent(content))),
+        branch: 'main'
+      };
+      
+      try {
+        const result = await githubApiRequest(`contents/${filePath}`, 'PUT', data);
+        if (result) {
+          alert('文件创建成功！');
+          closeModal('fileModal');
+          loadFiles(currentPath);
+        }
+      } catch (error) {
+        console.error('创建文件失败:', error);
+        alert('创建文件失败，可能已存在同名文件');
+      }
+    }
+    
+    async function deleteItem(path, isDir) {
+      if (!confirm(`确定要删除${isDir ? '文件夹' : '文件'} "${path.split('/').pop()}" 吗？`)) {
+        return;
+      }
+      
+      try {
+        const fileInfo = await githubApiRequest(`contents/${path}`);
+        
+        const data = {
+          message: `删除${isDir ? '文件夹' : '文件'} ${path.split('/').pop()}`,
+          sha: fileInfo.sha,
+          branch: 'main'
+        };
+        
+        const result = await githubApiRequest(`contents/${path}`, 'DELETE', data);
+        if (result) {
+          alert(`${isDir ? '文件夹' : '文件'}删除成功！`);
+          loadFiles(currentPath);
+        }
+      } catch (error) {
+        console.error('删除失败:', error);
+        alert('删除失败，可能是权限问题');
+      }
+    }
+    
+    // ================== 文件上传功能 ==================
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('uploadArea').classList.add('dragover');
+    }
+    
+    function handleDragLeave(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('uploadArea').classList.remove('dragover');
+    }
+    
     function handleDrop(e) {
-      const dt = e.dataTransfer;
-      const files = dt.files;
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('uploadArea').classList.remove('dragover');
+      
+      const files = e.dataTransfer.files;
       handleFiles(files);
     }
     
-    // 处理文件选择
     function handleFileSelect(e) {
       const files = e.target.files;
       handleFiles(files);
     }
     
-    // 处理文件上传
     async function handleFiles(files) {
-      if (files.length === 0) return;
+      const fileList = document.getElementById('uploadFileList');
+      fileList.innerHTML = '';
+      fileList.style.display = 'block';
       
-      showNotification(`准备上传 ${files.length} 个文件...`, 'warning');
-      
-      if (currentMode === 'github') {
-        // GitHub文件上传（适用于小文件）
-        for (let i = 0; i < files.length; i++) {
-          await uploadToGitHub(files[i]);
-        }
-      } else {
-        // 云存储文件上传（适用于大文件）
-        for (let i = 0; i < files.length; i++) {
-          await uploadToCloud(files[i]);
-        }
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const fileItem = document.createElement('div');
+        fileItem.className = 'upload-file-item';
+        fileItem.innerHTML = `
+          <span>${file.name} (${(file.size / 1024).toFixed(2)} KB)</span>
+          <span style="color: var(--accent-green);">等待上传...</span>
+        `;
+        fileList.appendChild(fileItem);
+        
+        await uploadFile(file);
+        
+        fileItem.querySelector('span:last-child').textContent = '上传成功';
+        fileItem.querySelector('span:last-child').style.color = 'var(--accent-green)';
       }
+      
+      setTimeout(() => {
+        fileList.style.display = 'none';
+        loadFiles(currentPath);
+      }, 2000);
     }
     
-    // 上传到GitHub
-    async function uploadToGitHub(file) {
-      if (file.size > 25 * 1024 * 1024) {
-        showNotification(`文件 ${file.name} 超过25MB，请使用云存储模式`, 'error');
+    async function uploadFile(file) {
+      const token = document.getElementById('token').value;
+      
+      if (!token) {
+        alert('请先输入GitHub访问令牌！');
         return;
       }
       
-      try {
-        showNotification(`上传 ${file.name} 到GitHub...`, 'warning');
+      const filePath = currentPath ? `${currentPath}/${file.name}` : file.name;
+      
+      const reader = new FileReader();
+      
+      return new Promise((resolve, reject) => {
+        reader.onload = async function(e) {
+          try {
+            const content = btoa(new Uint8Array(e.target.result).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+            
+            const data = {
+              message: `上传文件 ${file.name}`,
+              content: content,
+              branch: 'main'
+            };
+            
+            const result = await githubApiRequest(`contents/${filePath}`, 'PUT', data);
+            if (result) {
+              resolve();
+            } else {
+              reject(new Error('上传失败'));
+            }
+          } catch (error) {
+            reject(error);
+          }
+        };
         
-        // 这里需要实现GitHub的文件上传API
-        // 由于涉及Git API，这里只做演示
-        showNotification(`GitHub上传功能需要实现Git API调用`, 'warning');
-        
-      } catch (error) {
-        showNotification(`上传失败: ${error.message}`, 'error');
-      }
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+      });
     }
     
-    // 上传到云存储
-    async function uploadToCloud(file) {
-      try {
-        showNotification(`上传 ${file.name} 到云存储...`, 'warning');
-        
-        // 这里需要实现云存储的上传API
-        // 示例：通过FormData上传
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('path', config.cloud.path);
-        
-        if (config.cloud.password) {
-          formData.append('password', config.cloud.password);
-        }
-        
-        const response = await fetch(`${config.cloud.url.replace(/\/$/, '')}/upload`, {
-          method: 'POST',
-          body: formData
-        });
-        
-        if (response.ok) {
-          showNotification(`${file.name} 上传成功`, 'success');
-          // 刷新文件列表
-          if (currentMode === 'cloud') {
-            loadCloudFiles();
+    // ================== 初始化 ==================
+    document.addEventListener('DOMContentLoaded', function() {
+      loadConfig();
+      
+      const avatarImg = document.querySelector('.avatar-img');
+      const avatarFallback = document.querySelector('.avatar-fallback');
+      
+      if (avatarImg && avatarFallback) {
+        if (avatarImg.complete) {
+          if (avatarImg.naturalWidth === 0) {
+            avatarFallback.style.display = 'flex';
+          } else {
+            avatarImg.classList.add('loaded');
+            avatarFallback.style.display = 'none';
           }
         } else {
-          throw new Error('上传失败');
+          avatarImg.addEventListener('load', function() {
+            this.classList.add('loaded');
+            avatarFallback.style.display = 'none';
+          });
+          
+          avatarImg.addEventListener('error', function() {
+            this.style.display = 'none';
+            avatarFallback.style.display = 'flex';
+          });
         }
-      } catch (error) {
-        showNotification(`上传失败: ${error.message}`, 'error');
       }
-    }
-    
-    // 新建文件夹
-    function createFolder() {
-      const folderName = prompt('请输入文件夹名称:');
-      if (!folderName) return;
       
-      if (currentMode === 'github') {
-        showNotification('GitHub创建文件夹功能需要API支持', 'warning');
-      } else {
-        showNotification('云存储创建文件夹功能需要API支持', 'warning');
-      }
-    }
-    
-    // 显示通知
-    function showNotification(message, type = 'info') {
-      // 移除之前的通知
-      const oldNotifications = document.querySelectorAll('.notification');
-      oldNotifications.forEach(n => n.remove());
+      const uploadArea = document.getElementById('uploadArea');
+      const fileInput = document.getElementById('fileInput');
       
-      const notification = document.createElement('div');
-      notification.className = `notification ${type}`;
-      notification.innerHTML = message;
-      
-      document.body.appendChild(notification);
-      
-      // 3秒后自动移除
-      setTimeout(() => {
-        notification.style.opacity = '0';
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => notification.remove(), 300);
-      }, 3000);
-    }
+      uploadArea.addEventListener('click', function() {
+        fileInput.click();
+      });
+    });
   </script>
 </body>
 </html>
