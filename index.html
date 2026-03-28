@@ -1113,23 +1113,94 @@ const MAX_TOTAL_FILE_SIZE  = 512 * 1024 * 1024;   // 512MB
         downloadFile(currentPreviewFile.path, currentPreviewFile.name);
       }
     }
-    
-    async function downloadFile(path, name) {
-      try {
-        const file = await githubApiRequest(`contents/${path}`);
-        if (file && file.download_url) {
-          const link = document.createElement('a');
-          link.href = file.download_url;
-          link.download = name;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }
-      } catch (error) {
-        console.error('下载文件失败:', error);
-        alert('无法下载文件');
-      }
+
+    // --- 分片合并下载辅助 ---
+// 判断是不是分片，比如 xxxx.part1、xxxx.part2（返回true/false）
+function isFilePart(name) {
+  return /\.part([1-9]\d*)$/.test(name);
+}
+
+// 返回不带.partN的base文件名，比如 xxx.mp4.part2 => xxx.mp4
+function getPartBaseName(fullname) {
+  return fullname.replace(/\.part\d+$/, '');
+}
+
+// 下载并合并所有分片（主目录，原分片名）
+async function downloadAndMergeParts(partPath, partName) {
+  // 提取分片所在目录
+  const dir = partPath.lastIndexOf('/') >= 0 ? partPath.substring(0, partPath.lastIndexOf('/')) : '';
+  const baseName = getPartBaseName(partName);
+
+  // 获取目录下所有文件，过滤并排序所有属于baseName的 .partN 文件
+  const files = await githubApiRequest(`contents/${dir}`);
+  const partFiles = files
+    .filter(f => f.name.startsWith(baseName + '.part') && /\.part\d+$/.test(f.name))
+    .sort((a, b) => {
+      // 比较 part 数字：保证顺序
+      const n1 = parseInt(a.name.match(/\.part(\d+)$/)[1]);
+      const n2 = parseInt(b.name.match(/\.part(\d+)$/)[1]);
+      return n1 - n2;
+    });
+
+  if (partFiles.length === 0) {
+    alert('找不到所有分片');
+    return;
+  }
+
+  // 逐个下载内容并解码成Uint8Array数组
+  let chunks = [];
+  for (let i = 0; i < partFiles.length; i++) {
+    const thisPath = dir ? dir + '/' + partFiles[i].name : partFiles[i].name;
+    const partApiData = await githubApiRequest(`contents/${thisPath}`);
+    const binStr = atob(partApiData.content.replace(/\s/g, ''));
+    const bytes = new Uint8Array(binStr.length);
+    for (let j = 0; j < binStr.length; j++) bytes[j] = binStr.charCodeAt(j);
+    chunks.push(bytes);
+  }
+
+  // 合成一个大块
+  const totalLen = chunks.reduce((sum, arr) => sum + arr.length, 0);
+  const merged = new Uint8Array(totalLen);
+  let offset = 0;
+  for(let arr of chunks) {
+    merged.set(arr, offset);
+    offset += arr.length;
+  }
+
+  // 下载生成的Blob，名字=去掉.part1后的文件名
+  const blob = new Blob([merged], {type: 'application/octet-stream'});
+  const newName = baseName;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = newName;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
+  document.body.removeChild(a);
+}
+   async function downloadFile(path, name) {
+  // step1: 判断是不是分片
+  if (isFilePart(name)) {
+    // 如果是分片，自动合并所有 .partN 并下载
+    await downloadAndMergeParts(path, name);
+    return;
+  }
+  // step2: 保持原有下载逻辑
+  try {
+    const file = await githubApiRequest(`contents/${path}`);
+    if (file && file.download_url) {
+      const link = document.createElement('a');
+      link.href = file.download_url;
+      link.download = name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
+  } catch (error) {
+    console.error('下载文件失败:', error);
+    alert('无法下载文件');
+  }
+}
     
     function editFile(path, name) {
       currentFile = path;
