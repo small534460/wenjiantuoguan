@@ -1178,14 +1178,94 @@ async function downloadAndMergeParts(partPath, partName) {
   setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
   document.body.removeChild(a);
 }
+    // =============== 分片合并下载辅助函数 ===============
+
+// 判断是不是分片文件名（形如 xxx.xxx.partN 返回true）
+function isFilePart(name) {
+  return /\.part([1-9]\d*)$/.test(name);
+}
+
+// 去掉 .partN 后缀，获取原始文件名
+function getPartBaseName(fullname) {
+  return fullname.replace(/\.part\d+$/, '');
+}
+
+// 下载并合并所有分片（主目录，原分片名）
+async function downloadAndMergeParts(partPath, partName) {
+  // 【1】确定分片在的目录
+  const dir = partPath.lastIndexOf('/') >= 0 ? partPath.substring(0, partPath.lastIndexOf('/')) : '';
+  const baseName = getPartBaseName(partName);
+
+  // 【2】拉目录下所有文件，找到所有 .partN
+  const files = await githubApiRequest(`contents/${dir}`);
+  const partFiles = files
+    .filter(f => f.name.startsWith(baseName + '.part') && /\.part\d+$/.test(f.name))
+    .sort((a, b) => {
+      const n1 = parseInt(a.name.match(/\.part(\d+)$/)[1]);
+      const n2 = parseInt(b.name.match(/\.part(\d+)$/)[1]);
+      return n1 - n2;
+    });
+
+  if (partFiles.length === 0) {
+    alert('找不到所有分片');
+    return;
+  }
+
+  // 【3】依次拉分片内容。遇到API内容过大自动走download_url
+  let chunks = [];
+  for (let i = 0; i < partFiles.length; i++) {
+    // 拼成xxx/yyy.partN，或yyy.partN
+    const thisPath = dir ? dir + '/' + partFiles[i].name : partFiles[i].name;
+    const partApiData = await githubApiRequest(`contents/${thisPath}`);
+
+    // 有content字段（小分片）
+    if (partApiData.content) {
+      const binStr = atob(partApiData.content.replace(/\s/g, ''));
+      const bytes = new Uint8Array(binStr.length);
+      for (let j = 0; j < binStr.length; j++) bytes[j] = binStr.charCodeAt(j);
+      chunks.push(bytes);
+    } else if (partApiData.download_url) {
+      // 用download_url拉（大分片）
+      try {
+        const resp = await fetch(partApiData.download_url);
+        const buf = await resp.arrayBuffer();
+        chunks.push(new Uint8Array(buf));
+      } catch (e) {
+        alert('分片 download_url 拉取失败: ' + partFiles[i].name);
+        return;
+      }
+    } else {
+      alert('有分片没有内容字段也没有download_url: ' + partFiles[i].name);
+      return;
+    }
+  }
+
+  // 【4】合并并保存
+  const totalLen = chunks.reduce((sum, arr) => sum + arr.length, 0);
+  const merged = new Uint8Array(totalLen);
+  let offset = 0;
+  for(let arr of chunks) {
+    merged.set(arr, offset);
+    offset += arr.length;
+  }
+
+  // 【5】触发下载
+  const blob = new Blob([merged], {type: 'application/octet-stream'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = baseName;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
+  document.body.removeChild(a);
+}
    async function downloadFile(path, name) {
-  // step1: 判断是不是分片
+  // 【A】如果点击的是分片文件，自动合并所有分片下载成原文件名
   if (isFilePart(name)) {
-    // 如果是分片，自动合并所有 .partN 并下载
     await downloadAndMergeParts(path, name);
     return;
   }
-  // step2: 保持原有下载逻辑
+  // 【B】否则继续你原来的单文件下载逻辑
   try {
     const file = await githubApiRequest(`contents/${path}`);
     if (file && file.download_url) {
