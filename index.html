@@ -817,6 +817,9 @@
   </div>
   
   <script>
+   // 分片配置（支持大文件自动拆分为25MB每片）
+const MAX_SINGLE_FILE_SIZE = 25 * 1024 * 1024;    // 25MB
+const MAX_TOTAL_FILE_SIZE  = 512 * 1024 * 1024;   // 512MB 
     // ================== 全局变量 ==================
     let currentPath = '';
     let currentFile = null;
@@ -1322,7 +1325,9 @@
         `;
         fileList.appendChild(fileItem);
         
-        await uploadFile(file);
+await uploadFile(file, function(percent){
+  fileItem.querySelector('span:last-child').textContent = `上传进度：${percent}%`;
+});
         
         fileItem.querySelector('span:last-child').textContent = '上传成功';
         fileItem.querySelector('span:last-child').style.color = 'var(--accent-green)';
@@ -1334,45 +1339,88 @@
       }, 2000);
     }
     
-    async function uploadFile(file) {
-      const token = document.getElementById('token').value;
-      
-      if (!token) {
-        alert('请先输入GitHub访问令牌！');
-        return;
-      }
-      
-      const filePath = currentPath ? `${currentPath}/${file.name}` : file.name;
-      
-      const reader = new FileReader();
-      
-      return new Promise((resolve, reject) => {
-        reader.onload = async function(e) {
-          try {
-            const content = btoa(new Uint8Array(e.target.result).reduce((data, byte) => data + String.fromCharCode(byte), ''));
-            
-            const data = {
-              message: `上传文件 ${file.name}`,
-              content: content,
-              branch: 'main'
-            };
-            
-            const result = await githubApiRequest(`contents/${filePath}`, 'PUT', data);
-            if (result) {
-              resolve();
-            } else {
-              reject(new Error('上传失败'));
-            }
-          } catch (error) {
-            reject(error);
-          }
+    // ================== 支持分片和小文件统一上传 ==================
+async function uploadFile(file, onProgress) {
+  const token = document.getElementById('token').value;
+  if (!token) {
+    alert('请先输入GitHub访问令牌！');
+    return;
+  }
+  if (file.size > MAX_TOTAL_FILE_SIZE) {
+    alert('文件不能超过512MB');
+    return;
+  }
+  // 大文件走分片，小文件直接上传
+  if (file.size > MAX_SINGLE_FILE_SIZE) {
+    await uploadFileInChunks(file, onProgress);
+    return;
+  }
+  const filePath = currentPath ? `${currentPath}/${file.name}` : file.name;
+  const reader = new FileReader();
+  return new Promise((resolve, reject) => {
+    reader.onload = async function(e) {
+      try {
+        const content = btoa(new Uint8Array(e.target.result).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+        const data = {
+          message: `上传文件 ${file.name}`,
+          content: content,
+          branch: 'main'
         };
-        
-        reader.onerror = reject;
-        reader.readAsArrayBuffer(file);
-      });
-    }
-    
+        const result = await githubApiRequest(`contents/${filePath}`, 'PUT', data);
+        if (result) {
+          resolve();
+        } else {
+          reject(new Error('上传失败'));
+        }
+      } catch (error) {
+        reject(error);
+      }
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(file);
+  });
+}
+    // 分片上传函数
+async function uploadFileInChunks(file, onProgress) {
+  const fileName = file.name;
+  const dirPath = currentPath ? `${currentPath}/` : '';
+  const totalChunks = Math.ceil(file.size / MAX_SINGLE_FILE_SIZE);
+  if (totalChunks > 100) {
+    alert('单文件不能大于100分片（即最大512MB）');
+    throw new Error('chunk limit');
+  }
+  for (let i = 0; i < totalChunks; i++) {
+    const start = i * MAX_SINGLE_FILE_SIZE;
+    const end = Math.min(file.size, (i + 1) * MAX_SINGLE_FILE_SIZE);
+    const chunk = file.slice(start, end);
+    const partFileName = `${fileName}.part${i+1}`;
+    const filePath = `${dirPath}${partFileName}`;
+    await uploadChunk(chunk, filePath, i+1, totalChunks, fileName);
+    if (typeof onProgress === 'function') 
+      onProgress(Math.round((i + 1) / totalChunks * 100));
+  }
+}
+
+// 单片上传
+async function uploadChunk(chunk, filePath, partIdx, totalChunks, originName) {
+  const token = document.getElementById('token').value;
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      const content = btoa(new Uint8Array(e.target.result).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+      const data = {
+        message: `上传大文件分段：${originName} 的第${partIdx}段（共${totalChunks}段）`,
+        content: content,
+        branch: 'main'
+      };
+      const result = await githubApiRequest(`contents/${filePath}`, 'PUT', data);
+      if (result) resolve();
+      else reject(new Error(`分片${partIdx}上传失败`));
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(chunk);
+  });
+}
     // ================== 初始化 ==================
     document.addEventListener('DOMContentLoaded', function() {
       loadConfig();
