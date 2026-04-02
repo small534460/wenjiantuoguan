@@ -818,6 +818,7 @@
   </div>
   
   <script>
+    let isDownloadingParts = false; // 避免并发多次分片下载
    // 分片配置（支持大文件自动拆分为25MB每片）
 const MAX_SINGLE_FILE_SIZE = 25 * 1024 * 1024;    // 25MB
 const MAX_TOTAL_FILE_SIZE  = 512 * 1024 * 1024;   // 512MB 
@@ -1127,17 +1128,21 @@ function getPartBaseName(fullname) {
 }
 
 // 下载并合并所有分片（主目录，原分片名）
-async function downloadAndMergeParts(partPath, partName) {
-  // 提取分片所在目录
+  async function downloadAndMergeParts(partPath, partName) {
+  if(isDownloadingParts) {
+    alert("分片合并下载正在执行中，请稍安勿躁~");
+    return;
+  }
+  isDownloadingParts = true;
+  document.getElementById('globalDownloadTip').style.display = 'block';
+
   const dir = partPath.lastIndexOf('/') >= 0 ? partPath.substring(0, partPath.lastIndexOf('/')) : '';
   const baseName = getPartBaseName(partName);
 
-  // 获取目录下所有文件，过滤并排序所有属于baseName的 .partN 文件
   const files = await githubApiRequest(`contents/${dir}`);
   const partFiles = files
     .filter(f => f.name.startsWith(baseName + '.part') && /\.part\d+$/.test(f.name))
     .sort((a, b) => {
-      // 比较 part 数字：保证顺序
       const n1 = parseInt(a.name.match(/\.part(\d+)$/)[1]);
       const n2 = parseInt(b.name.match(/\.part(\d+)$/)[1]);
       return n1 - n2;
@@ -1145,21 +1150,40 @@ async function downloadAndMergeParts(partPath, partName) {
 
   if (partFiles.length === 0) {
     alert('找不到所有分片');
+    isDownloadingParts = false; 
+    document.getElementById('globalDownloadTip').style.display = 'none';
     return;
   }
 
-  // 逐个下载内容并解码成Uint8Array数组
   let chunks = [];
   for (let i = 0; i < partFiles.length; i++) {
     const thisPath = dir ? dir + '/' + partFiles[i].name : partFiles[i].name;
     const partApiData = await githubApiRequest(`contents/${thisPath}`);
-    const binStr = atob(partApiData.content.replace(/\s/g, ''));
-    const bytes = new Uint8Array(binStr.length);
-    for (let j = 0; j < binStr.length; j++) bytes[j] = binStr.charCodeAt(j);
-    chunks.push(bytes);
+
+    if (partApiData.content) {
+      const binStr = atob(partApiData.content.replace(/\s/g, ''));
+      const bytes = new Uint8Array(binStr.length);
+      for (let j = 0; j < binStr.length; j++) bytes[j] = binStr.charCodeAt(j);
+      chunks.push(bytes);
+    } else if (partApiData.download_url) {
+      try {
+        const resp = await fetch(partApiData.download_url);
+        const buf = await resp.arrayBuffer();
+        chunks.push(new Uint8Array(buf));
+      } catch (e) {
+        alert('分片 download_url 拉取失败: ' + partFiles[i].name);
+        isDownloadingParts = false; 
+        document.getElementById('globalDownloadTip').style.display = 'none';
+        return;
+      }
+    } else {
+      alert('有分片没有内容字段也没有download_url: ' + partFiles[i].name);
+      isDownloadingParts = false; 
+      document.getElementById('globalDownloadTip').style.display = 'none';
+      return;
+    }
   }
 
-  // 合成一个大块
   const totalLen = chunks.reduce((sum, arr) => sum + arr.length, 0);
   const merged = new Uint8Array(totalLen);
   let offset = 0;
@@ -1168,16 +1192,18 @@ async function downloadAndMergeParts(partPath, partName) {
     offset += arr.length;
   }
 
-  // 下载生成的Blob，名字=去掉.part1后的文件名
   const blob = new Blob([merged], {type: 'application/octet-stream'});
-  const newName = baseName;
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = newName;
+  a.download = baseName;
   document.body.appendChild(a);
   a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
   document.body.removeChild(a);
+
+  // **结尾解锁和隐藏提示**
+  isDownloadingParts = false;
+  document.getElementById('globalDownloadTip').style.display = 'none';
 }
     // =============== 分片合并下载辅助函数 ===============
 
@@ -1609,5 +1635,21 @@ async function uploadChunk(chunk, filePath, partIdx, totalChunks, originName) {
       });
     });
   </script>
+  <!-- 全局下载提示 -->
+<div id="globalDownloadTip" style="
+  display:none;
+  position:fixed;
+  top:40px; left:50%; transform:translateX(-50%);
+  background:rgba(7,16,38,0.93);
+  color:#e6eef8;
+  font-weight:bold;
+  padding:16px 38px;
+  border-radius:12px;
+  font-size:1.2em;
+  z-index:2222;
+  box-shadow:0 6px 24px #0004;
+  ">
+  正在下载，稍安勿躁~
+</div>
 </body>
 </html>
