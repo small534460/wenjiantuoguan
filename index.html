@@ -702,7 +702,6 @@
         </ul>
         <p>4. 新建文件夹功能错误，请点击新建文件功能，格式是***/**.keep</p>
         <p>5. 要上传文件到文件夹，请先进入文件夹，然后使用上传区域</p>
-        <p>6. 本站添加了超过25MB的文件分片上传的功能，但是无法合并，在上传的分片处随便点击下载可以在浏览器合并下载</p>
       </div>
     </div>
     
@@ -818,10 +817,6 @@
   </div>
   
   <script>
-    let isDownloadingParts = false; // 避免并发多次分片下载
-   // 分片配置（支持大文件自动拆分为25MB每片）
-const MAX_SINGLE_FILE_SIZE = 25 * 1024 * 1024;    // 25MB
-const MAX_TOTAL_FILE_SIZE  = 512 * 1024 * 1024;   // 512MB 
     // ================== 全局变量 ==================
     let currentPath = '';
     let currentFile = null;
@@ -1115,199 +1110,23 @@ const MAX_TOTAL_FILE_SIZE  = 512 * 1024 * 1024;   // 512MB
         downloadFile(currentPreviewFile.path, currentPreviewFile.name);
       }
     }
-
-    // --- 分片合并下载辅助 ---
-// 判断是不是分片，比如 xxxx.part1、xxxx.part2（返回true/false）
-function isFilePart(name) {
-  return /\.part([1-9]\d*)$/.test(name);
-}
-
-// 返回不带.partN的base文件名，比如 xxx.mp4.part2 => xxx.mp4
-function getPartBaseName(fullname) {
-  return fullname.replace(/\.part\d+$/, '');
-}
-
-// 下载并合并所有分片（主目录，原分片名）
-  async function downloadAndMergeParts(partPath, partName) {
-  if(isDownloadingParts) {
-    alert("分片合并下载正在执行中，请稍安勿躁~");
-    return;
-  }
-  isDownloadingParts = true;
-  document.getElementById('globalDownloadTip').style.display = 'block';
-
-  const dir = partPath.lastIndexOf('/') >= 0 ? partPath.substring(0, partPath.lastIndexOf('/')) : '';
-  const baseName = getPartBaseName(partName);
-
-  const files = await githubApiRequest(`contents/${dir}`);
-  const partFiles = files
-    .filter(f => f.name.startsWith(baseName + '.part') && /\.part\d+$/.test(f.name))
-    .sort((a, b) => {
-      const n1 = parseInt(a.name.match(/\.part(\d+)$/)[1]);
-      const n2 = parseInt(b.name.match(/\.part(\d+)$/)[1]);
-      return n1 - n2;
-    });
-
-  if (partFiles.length === 0) {
-    alert('找不到所有分片');
-    isDownloadingParts = false; 
-    document.getElementById('globalDownloadTip').style.display = 'none';
-    return;
-  }
-
-  let chunks = [];
-  for (let i = 0; i < partFiles.length; i++) {
-    const thisPath = dir ? dir + '/' + partFiles[i].name : partFiles[i].name;
-    const partApiData = await githubApiRequest(`contents/${thisPath}`);
-
-    if (partApiData.content) {
-      const binStr = atob(partApiData.content.replace(/\s/g, ''));
-      const bytes = new Uint8Array(binStr.length);
-      for (let j = 0; j < binStr.length; j++) bytes[j] = binStr.charCodeAt(j);
-      chunks.push(bytes);
-    } else if (partApiData.download_url) {
+    
+    async function downloadFile(path, name) {
       try {
-        const resp = await fetch(partApiData.download_url);
-        const buf = await resp.arrayBuffer();
-        chunks.push(new Uint8Array(buf));
-      } catch (e) {
-        alert('分片 download_url 拉取失败: ' + partFiles[i].name);
-        isDownloadingParts = false; 
-        document.getElementById('globalDownloadTip').style.display = 'none';
-        return;
+        const file = await githubApiRequest(`contents/${path}`);
+        if (file && file.download_url) {
+          const link = document.createElement('a');
+          link.href = file.download_url;
+          link.download = name;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      } catch (error) {
+        console.error('下载文件失败:', error);
+        alert('无法下载文件');
       }
-    } else {
-      alert('有分片没有内容字段也没有download_url: ' + partFiles[i].name);
-      isDownloadingParts = false; 
-      document.getElementById('globalDownloadTip').style.display = 'none';
-      return;
     }
-  }
-
-  const totalLen = chunks.reduce((sum, arr) => sum + arr.length, 0);
-  const merged = new Uint8Array(totalLen);
-  let offset = 0;
-  for(let arr of chunks) {
-    merged.set(arr, offset);
-    offset += arr.length;
-  }
-
-  const blob = new Blob([merged], {type: 'application/octet-stream'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = baseName;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
-  document.body.removeChild(a);
-
-  // **结尾解锁和隐藏提示**
-  isDownloadingParts = false;
-  document.getElementById('globalDownloadTip').style.display = 'none';
-}
-    // =============== 分片合并下载辅助函数 ===============
-
-// 判断是不是分片文件名（形如 xxx.xxx.partN 返回true）
-function isFilePart(name) {
-  return /\.part([1-9]\d*)$/.test(name);
-}
-
-// 去掉 .partN 后缀，获取原始文件名
-function getPartBaseName(fullname) {
-  return fullname.replace(/\.part\d+$/, '');
-}
-
-// 下载并合并所有分片（主目录，原分片名）
-async function downloadAndMergeParts(partPath, partName) {
-  // 【1】确定分片在的目录
-  const dir = partPath.lastIndexOf('/') >= 0 ? partPath.substring(0, partPath.lastIndexOf('/')) : '';
-  const baseName = getPartBaseName(partName);
-
-  // 【2】拉目录下所有文件，找到所有 .partN
-  const files = await githubApiRequest(`contents/${dir}`);
-  const partFiles = files
-    .filter(f => f.name.startsWith(baseName + '.part') && /\.part\d+$/.test(f.name))
-    .sort((a, b) => {
-      const n1 = parseInt(a.name.match(/\.part(\d+)$/)[1]);
-      const n2 = parseInt(b.name.match(/\.part(\d+)$/)[1]);
-      return n1 - n2;
-    });
-
-  if (partFiles.length === 0) {
-    alert('找不到所有分片');
-    return;
-  }
-
-  // 【3】依次拉分片内容。遇到API内容过大自动走download_url
-  let chunks = [];
-  for (let i = 0; i < partFiles.length; i++) {
-    // 拼成xxx/yyy.partN，或yyy.partN
-    const thisPath = dir ? dir + '/' + partFiles[i].name : partFiles[i].name;
-    const partApiData = await githubApiRequest(`contents/${thisPath}`);
-
-    // 有content字段（小分片）
-    if (partApiData.content) {
-      const binStr = atob(partApiData.content.replace(/\s/g, ''));
-      const bytes = new Uint8Array(binStr.length);
-      for (let j = 0; j < binStr.length; j++) bytes[j] = binStr.charCodeAt(j);
-      chunks.push(bytes);
-    } else if (partApiData.download_url) {
-      // 用download_url拉（大分片）
-      try {
-        const resp = await fetch(partApiData.download_url);
-        const buf = await resp.arrayBuffer();
-        chunks.push(new Uint8Array(buf));
-      } catch (e) {
-        alert('分片 download_url 拉取失败: ' + partFiles[i].name);
-        return;
-      }
-    } else {
-      alert('有分片没有内容字段也没有download_url: ' + partFiles[i].name);
-      return;
-    }
-  }
-
-  // 【4】合并并保存
-  const totalLen = chunks.reduce((sum, arr) => sum + arr.length, 0);
-  const merged = new Uint8Array(totalLen);
-  let offset = 0;
-  for(let arr of chunks) {
-    merged.set(arr, offset);
-    offset += arr.length;
-  }
-
-  // 【5】触发下载
-  const blob = new Blob([merged], {type: 'application/octet-stream'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = baseName;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
-  document.body.removeChild(a);
-}
-   async function downloadFile(path, name) {
-  // 【A】如果点击的是分片文件，自动合并所有分片下载成原文件名
-  if (isFilePart(name)) {
-    await downloadAndMergeParts(path, name);
-    return;
-  }
-  // 【B】否则继续你原来的单文件下载逻辑
-  try {
-    const file = await githubApiRequest(`contents/${path}`);
-    if (file && file.download_url) {
-      const link = document.createElement('a');
-      link.href = file.download_url;
-      link.download = name;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  } catch (error) {
-    console.error('下载文件失败:', error);
-    alert('无法下载文件');
-  }
-}
     
     function editFile(path, name) {
       currentFile = path;
@@ -1503,9 +1322,7 @@ async function downloadAndMergeParts(partPath, partName) {
         `;
         fileList.appendChild(fileItem);
         
-await uploadFile(file, function(percent){
-  fileItem.querySelector('span:last-child').textContent = `上传进度：${percent}%`;
-});
+        await uploadFile(file);
         
         fileItem.querySelector('span:last-child').textContent = '上传成功';
         fileItem.querySelector('span:last-child').style.color = 'var(--accent-green)';
@@ -1517,88 +1334,45 @@ await uploadFile(file, function(percent){
       }, 2000);
     }
     
-    // ================== 支持分片和小文件统一上传 ==================
-async function uploadFile(file, onProgress) {
-  const token = document.getElementById('token').value;
-  if (!token) {
-    alert('请先输入GitHub访问令牌！');
-    return;
-  }
-  if (file.size > MAX_TOTAL_FILE_SIZE) {
-    alert('文件不能超过512MB');
-    return;
-  }
-  // 大文件走分片，小文件直接上传
-  if (file.size > MAX_SINGLE_FILE_SIZE) {
-    await uploadFileInChunks(file, onProgress);
-    return;
-  }
-  const filePath = currentPath ? `${currentPath}/${file.name}` : file.name;
-  const reader = new FileReader();
-  return new Promise((resolve, reject) => {
-    reader.onload = async function(e) {
-      try {
-        const content = btoa(new Uint8Array(e.target.result).reduce((data, byte) => data + String.fromCharCode(byte), ''));
-        const data = {
-          message: `上传文件 ${file.name}`,
-          content: content,
-          branch: 'main'
-        };
-        const result = await githubApiRequest(`contents/${filePath}`, 'PUT', data);
-        if (result) {
-          resolve();
-        } else {
-          reject(new Error('上传失败'));
-        }
-      } catch (error) {
-        reject(error);
+    async function uploadFile(file) {
+      const token = document.getElementById('token').value;
+      
+      if (!token) {
+        alert('请先输入GitHub访问令牌！');
+        return;
       }
-    };
-    reader.onerror = reject;
-    reader.readAsArrayBuffer(file);
-  });
-}
-    // 分片上传函数
-async function uploadFileInChunks(file, onProgress) {
-  const fileName = file.name;
-  const dirPath = currentPath ? `${currentPath}/` : '';
-  const totalChunks = Math.ceil(file.size / MAX_SINGLE_FILE_SIZE);
-  if (totalChunks > 100) {
-    alert('单文件不能大于100分片（即最大512MB）');
-    throw new Error('chunk limit');
-  }
-  for (let i = 0; i < totalChunks; i++) {
-    const start = i * MAX_SINGLE_FILE_SIZE;
-    const end = Math.min(file.size, (i + 1) * MAX_SINGLE_FILE_SIZE);
-    const chunk = file.slice(start, end);
-    const partFileName = `${fileName}.part${i+1}`;
-    const filePath = `${dirPath}${partFileName}`;
-    await uploadChunk(chunk, filePath, i+1, totalChunks, fileName);
-    if (typeof onProgress === 'function') 
-      onProgress(Math.round((i + 1) / totalChunks * 100));
-  }
-}
-
-// 单片上传
-async function uploadChunk(chunk, filePath, partIdx, totalChunks, originName) {
-  const token = document.getElementById('token').value;
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-      const content = btoa(new Uint8Array(e.target.result).reduce((data, byte) => data + String.fromCharCode(byte), ''));
-      const data = {
-        message: `上传大文件分段：${originName} 的第${partIdx}段（共${totalChunks}段）`,
-        content: content,
-        branch: 'main'
-      };
-      const result = await githubApiRequest(`contents/${filePath}`, 'PUT', data);
-      if (result) resolve();
-      else reject(new Error(`分片${partIdx}上传失败`));
-    };
-    reader.onerror = reject;
-    reader.readAsArrayBuffer(chunk);
-  });
-}
+      
+      const filePath = currentPath ? `${currentPath}/${file.name}` : file.name;
+      
+      const reader = new FileReader();
+      
+      return new Promise((resolve, reject) => {
+        reader.onload = async function(e) {
+          try {
+            const content = btoa(new Uint8Array(e.target.result).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+            
+            const data = {
+              message: `上传文件 ${file.name}`,
+              content: content,
+              branch: 'main'
+            };
+            
+            const result = await githubApiRequest(`contents/${filePath}`, 'PUT', data);
+            if (result) {
+              resolve();
+            } else {
+              reject(new Error('上传失败'));
+            }
+          } catch (error) {
+            reject(error);
+          }
+        };
+        
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+      });
+    }
+    
     // ================== 初始化 ==================
     document.addEventListener('DOMContentLoaded', function() {
       loadConfig();
@@ -1635,21 +1409,5 @@ async function uploadChunk(chunk, filePath, partIdx, totalChunks, originName) {
       });
     });
   </script>
-  <!-- 全局下载提示 -->
-<div id="globalDownloadTip" style="
-  display:none;
-  position:fixed;
-  top:40px; left:50%; transform:translateX(-50%);
-  background:rgba(7,16,38,0.93);
-  color:#e6eef8;
-  font-weight:bold;
-  padding:16px 38px;
-  border-radius:12px;
-  font-size:1.2em;
-  z-index:2222;
-  box-shadow:0 6px 24px #0004;
-  ">
-  正在下载，稍安勿躁~
-</div>
 </body>
 </html>
