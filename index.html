@@ -352,11 +352,15 @@
       content: "📎";
     }
     
-    .file-name {
-      flex: 1;
-      font-weight: 500;
-      word-break: break-all;
-    }
+.file-name {
+  flex: 1 1 0%;
+  font-weight: 500;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  min-width: 0;      /* 解决flex撑爆导致竖排 */
+  max-width: 100%;
+  white-space: normal;  /* 保证文字正常换行，而不是nowrap或者被挤竖排 */
+}
     
     .file-size {
       margin-right: 12px;
@@ -629,6 +633,18 @@
       opacity: 1;
       margin-top: 12px;
     }
+    @media (max-width: 768px) {
+  .file-name {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    word-break: break-all !important;
+    overflow-wrap: break-word !important;
+  }
+  .file-item {
+    flex-wrap: wrap !important;   /* 避免一排被挤到竖行 */
+  }
+}
   </style>
 </head>
 <body>
