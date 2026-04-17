@@ -1028,31 +1028,31 @@
             const isVideo = ['mp4', 'webm', 'mov', 'avi', 'mkv'].includes(fileExt);
             
             let actionButtons = '';
-            if (isText) {
-              actionButtons = `
-                <button class="btn-small edit" onclick="event.stopPropagation(); editFile('${item.path}', '${item.name}')">编辑</button>
-                <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
-              `;
-            } else if (isMusic) {
-              actionButtons = `
-                <button class="btn-small play" onclick="event.stopPropagation(); previewFile('${item.path}', '${item.name}', 'music')">播放</button>
-                <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
-              `;
-            } else if (isImage) {
-              actionButtons = `
-                <button class="btn-small view" onclick="event.stopPropagation(); previewFile('${item.path}', '${item.name}', 'image')">查看</button>
-                <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
-              `;
-              else if (isVideo) {
-             actionButtons = `
-                <button class="btn-small view" onclick="event.stopPropagation(); previewFile('${item.path}', '${item.name}', 'video')">预览</button>
-                <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
-            `;
-            } else {
-              actionButtons = `
-                <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
-              `;
-            }
+if (isText) {
+  actionButtons = `
+    <button class="btn-small edit" onclick="event.stopPropagation(); editFile('${item.path}', '${item.name}')">编辑</button>
+    <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
+  `;
+} else if (isMusic) {
+  actionButtons = `
+    <button class="btn-small play" onclick="event.stopPropagation(); previewFile('${item.path}', '${item.name}', 'music')">播放</button>
+    <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
+  `;
+} else if (isImage) {
+  actionButtons = `
+    <button class="btn-small view" onclick="event.stopPropagation(); previewFile('${item.path}', '${item.name}', 'image')">查看</button>
+    <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
+  `;
+} else if (isVideo) {
+  actionButtons = `
+    <button class="btn-small view" onclick="event.stopPropagation(); previewFile('${item.path}', '${item.name}', 'video')">预览</button>
+    <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
+  `;
+} else {
+  actionButtons = `
+    <button class="btn-small download" onclick="event.stopPropagation(); downloadFile('${item.path}', '${item.name}')">下载</button>
+  `;
+}
             
             const sizeKB = Math.round(item.size / 1024 * 100) / 100;
             
