@@ -140,7 +140,7 @@
 
 <div class="modal" id="adminModal">
   <div class="modal-content">
-    <div class="modal-header"><h3>🔐 管理员验证</h3><div class="modal-subtitle">输入密码解锁配置编辑 + 自动填充令牌</div></div>
+    <div class="modal-header"><h3>🔐 管理员验证</h3><div class="modal-subtitle">输入密码</div></div>
     <div class="modal-body">
       <div class="password-input-wrapper">
         <input type="password" id="adminPassword" placeholder="请输入管理员密码" onkeydown="if(event.key==='Enter')verifyAdmin()">
@@ -150,7 +150,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeAdminModal()">取消</button>
-      <button class="btn btn-warning" onclick="verifyAdmin()">🔑 验证并填充令牌</button>
+      <button class="btn btn-warning" onclick="verifyAdmin()">🔑 验证</button>
     </div>
   </div>
 </div>
@@ -193,7 +193,7 @@
     <div class="help-header"><span>📖 使用说明</span><span class="help-icon">▼</span></div>
     <div class="help-content" id="helpContent">
       <p>1. 输入令牌或解锁管理员自动填充后，点击"加载文件"</p>
-      <p>2. 🔐 点击右上角"管理员模式"解锁用户名/仓库名编辑 + 自动填充令牌</p>
+      <p>2. 🔐 点击右上角"管理员模式"解锁用户名/仓库名编辑</p>
       <p>3. 不同文件类型操作：📄文本可编辑 🎵音乐可播放 🎬视频可预览 🖼️图片可查看 📎全部可下载</p>
       <p>4. 新建文件夹请使用"新建文件"功能，格式：文件夹名/.keep</p>
     </div>
