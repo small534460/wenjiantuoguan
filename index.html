@@ -163,30 +163,47 @@ function blobToBase64(blob){return new Promise(function(resolve,reject){var read
 
 async function uploadFileInChunks(file,filePath){uploadAbortController=new AbortController();var token=document.getElementById('token').value;var totalChunks=Math.ceil(file.size/CHUNK_SIZE);var startTime=Date.now();var pa=document.getElementById('uploadProgressArea'),pb=document.getElementById('uploadProgressBar'),pl=document.getElementById('uploadProgressLabel'),pp=document.getElementById('uploadProgressPercent'),st=document.getElementById('uploadSpeedText'),ua=document.getElementById('uploadArea');pa.classList.add('active');ua.classList.add('uploading');document.getElementById('uploadText').textContent='⏳ 正在上传：'+file.name;for(var i=0;i<totalChunks;i++){var start=i*CHUNK_SIZE,end=Math.min(start+CHUNK_SIZE,file.size),chunk=file.slice(start,end),chunkName=filePath+'.part'+String(i).padStart(3,'0');var chunkContent=await blobToBase64(chunk);pl.textContent='分片 '+(i+1)+'/'+totalChunks;pp.textContent=Math.round((i/totalChunks)*100)+'%';pb.style.width=((i/totalChunks)*100)+'%';var elapsed=(Date.now()-startTime)/1000;if(elapsed>0){var speed=(i*CHUNK_SIZE)/elapsed;if(speed>1048576)st.textContent=(speed/1048576).toFixed(1)+' MB/s';else if(speed>1024)st.textContent=(speed/1024).toFixed(1)+' KB/s'}try{var result=await fetch('https://api.github.com/repos/'+getUsername()+'/'+getRepo()+'/contents/'+chunkName,{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'分片 '+(i+1)+'/'+totalChunks+': '+file.name,content:chunkContent,branch:'main'}),signal:uploadAbortController.signal});if(!result.ok)throw new Error('HTTP '+result.status)}catch(err){if(err.name==='AbortError')showToast('⚠️ 已取消');else showToast('❌ 分片'+(i+1)+'失败');throw err}}pp.textContent='100%';pb.style.width='100%';pl.textContent='✅ 上传完成！';st.textContent=(file.size/1048576).toFixed(1)+' MB | '+totalChunks+' 分片';setTimeout(function(){pa.classList.remove('active');ua.classList.remove('uploading');document.getElementById('uploadText').textContent='📤 拖放文件或点击上传（>20MB自动分片）'},2500)}
 
-// ★★★ 核心修复：分片下载用 download_url 不带 Authorization ★★★
+// ★★★ 分片合并下载 - 只用一个方法：API content 解码 ★★★
 async function downloadAndMergeChunks(filePath,displayName){
-  downloadAbortController=new AbortController();var token=document.getElementById('token').value;
+  downloadAbortController=new AbortController();
   var dm=document.getElementById('downloadModal'),pb=document.getElementById('downloadProgressBar'),pl=document.getElementById('downloadProgressLabel'),pp=document.getElementById('downloadProgressPercent'),st=document.getElementById('downloadSpeedText'),fn=document.getElementById('downloadFileName');
   dm.style.display='flex';fn.textContent=displayName;pb.style.width='0%';pp.textContent='0%';pl.textContent='正在扫描分片...';st.textContent='';
   window._cancelDownload=function(){if(downloadAbortController)downloadAbortController.abort();dm.style.display='none';showToast('⚠️ 下载已取消')};
+
   try{
     var startTime=Date.now();
     var dirPath=filePath.substring(0,filePath.lastIndexOf('/')),baseName=filePath.substring(filePath.lastIndexOf('/')+1);
     var listEp=dirPath?'contents/'+dirPath:'contents',allFiles=await githubApiRequest(listEp);
-    var parts=[];if(allFiles&&Array.isArray(allFiles)){allFiles.forEach(function(item){if(item.type==='file'){var p=parsePartFile(item.name);if(p&&p.name===baseName)parts.push({index:p.index,path:item.path,download_url:item.download_url})}})}
+    var parts=[];if(allFiles&&Array.isArray(allFiles)){allFiles.forEach(function(item){if(item.type==='file'){var p=parsePartFile(item.name);if(p&&p.name===baseName)parts.push({index:p.index,path:item.path})}})}
     parts.sort(function(a,b){return a.index-b.index});if(parts.length===0)throw new Error('未找到分片');
     var totalParts=parts.length;pl.textContent='下载分片 1/'+totalParts;var chunks=[];
+    
     for(var i=0;i<totalParts;i++){
-      var part=parts[i];pl.textContent='下载分片 '+(i+1)+'/'+totalParts;var data=null;
-      // 方法1：download_url 直接下载（不带 Authorization header）
-      if(part.download_url){try{var resp=await fetch(part.download_url,{signal:downloadAbortController.signal});if(resp.ok)data=new Uint8Array(await resp.arrayBuffer())}catch(e){console.warn('分片'+(i+1)+' download_url 失败:',e.message)}}
-      // 方法2：降级用 API content
-      if(!data||data.length===0){var pd=await githubApiRequest('contents/'+part.path);if(pd&&pd.content){var bs=atob(pd.content.replace(/\s/g,''));data=new Uint8Array(bs.length);for(var j=0;j<bs.length;j++)data[j]=bs.charCodeAt(j)}}
-      if(!data||data.length===0)throw new Error('分片'+(i+1)+'无数据');
+      var part=parts[i];pl.textContent='下载分片 '+(i+1)+'/'+totalParts;
+      
+      // 唯一方法：通过 API 获取 content，用 Blob 方式解码
+      var partData=await githubApiRequest('contents/'+part.path);
+      if(!partData||!partData.content)throw new Error('分片'+(i+1)+'无内容');
+      
+      // 用 Blob + FileReader 解码 base64（避免 atob 大字符串问题）
+      var data=await new Promise(function(resolve,reject){
+        try{
+          var base64=partData.content.replace(/\s/g,'');
+          var byteChars=atob(base64);
+          var byteNums=new Array(byteChars.length);
+          for(var k=0;k<byteChars.length;k++)byteNums[k]=byteChars.charCodeAt(k);
+          resolve(new Uint8Array(byteNums));
+        }catch(e){reject(e)}
+      });
+      
+      if(!data||data.length===0)throw new Error('分片'+(i+1)+'解码失败');
       chunks.push(data);
+      
       var pct=Math.round(((i+1)/totalParts)*100);pp.textContent=pct+'%';pb.style.width=pct+'%';
       var elapsed=(Date.now()-startTime)/1000;if(elapsed>0){var speed=((i+1)*CHUNK_SIZE)/elapsed;if(speed>1048576)st.textContent=(speed/1048576).toFixed(1)+' MB/s';else if(speed>1024)st.textContent=(speed/1024).toFixed(1)+' KB/s'}
     }
+    
+    // 合并分片
     pl.textContent='正在合并...';var totalSize=chunks.reduce(function(s,c){return s+c.length},0);var merged=new Uint8Array(totalSize);var offset=0;for(var k=0;k<chunks.length;k++){merged.set(chunks[k],offset);offset+=chunks[k].length}
     var blob=new Blob([merged]);triggerDownload(blob,displayName);
     pp.textContent='100%';pb.style.width='100%';pl.textContent='✅ 下载完成！';st.textContent=(totalSize/1048576).toFixed(1)+' MB';
