@@ -6,25 +6,10 @@
   <title>GitHub 文件管理器</title>
   <meta name="description" content="Small 3 的GitHub文件管理系统" />
   <style>
-    :root{
-      --accent: #60a5fa; --accent-2: #3b82f6; --accent-green: #10B981;
-      --accent-green-hover: #059669; --accent-red: #EF4444; --accent-red-hover: #DC2626;
-      --accent-purple: #8B5CF6; --accent-purple-2: #7C3AED; --accent-gold: #f59e0b;
-      --muted: rgba(230,238,248,0.6); --radius: 12px; --blur-strength: 6px;
-    }
+    :root{--accent:#60a5fa;--accent-2:#3b82f6;--accent-green:#10B981;--accent-green-hover:#059669;--accent-red:#EF4444;--accent-red-hover:#DC2626;--accent-purple:#8B5CF6;--accent-purple-2:#7C3AED;--accent-gold:#f59e0b;--muted:rgba(230,238,248,0.6);--radius:12px;--blur-strength:6px}
     html,body{margin:0;padding:0;min-height:100vh;width:100%;overflow-x:hidden}
-    body{
-      background:linear-gradient(180deg,rgba(7,16,38,0.45) 0%,rgba(7,16,38,0.5) 100%),
-        url('https://images.unsplash.com/photo-1528721071427-cab7de8e8050?q=80&w=870&auto=format&fit=crop') center/cover no-repeat fixed;
-      color:#e6eef8;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;
-      -webkit-font-smoothing:antialiased;line-height:1.6;padding:20px 16px;box-sizing:border-box;display:block!important
-    }
-    .wrap{
-      width:100%;max-width:880px;background:rgba(0,0,0,0.25);
-      backdrop-filter:blur(var(--blur-strength));-webkit-backdrop-filter:blur(var(--blur-strength));
-      border-radius:16px;padding:28px;box-shadow:0 8px 30px rgba(2,6,23,0.4),inset 0 1px 0 rgba(255,255,255,0.05);
-      border:1px solid rgba(255,255,255,0.12);margin:0 auto;box-sizing:border-box;position:relative
-    }
+    body{background:linear-gradient(180deg,rgba(7,16,38,0.45) 0%,rgba(7,16,38,0.5) 100%),url('https://images.unsplash.com/photo-1528721071427-cab7de8e8050?q=80&w=870&auto=format&fit=crop') center/cover no-repeat fixed;color:#e6eef8;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;-webkit-font-smoothing:antialiased;line-height:1.6;padding:20px 16px;box-sizing:border-box;display:block!important}
+    .wrap{width:100%;max-width:880px;background:rgba(0,0,0,0.25);backdrop-filter:blur(var(--blur-strength));-webkit-backdrop-filter:blur(var(--blur-strength));border-radius:16px;padding:28px;box-shadow:0 8px 30px rgba(2,6,23,0.4),inset 0 1px 0 rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);margin:0 auto;box-sizing:border-box;position:relative}
     header{display:flex;align-items:center;gap:16px;margin-bottom:12px;flex-wrap:wrap;padding-right:140px}
     .avatar{width:64px;height:64px;border-radius:12px;box-shadow:0 6px 18px rgba(96,165,250,0.15);flex:0 0 64px;position:relative;overflow:hidden;border:2px solid rgba(96,165,250,0.4);background:linear-gradient(135deg,var(--accent),var(--accent-2))}
     .avatar-img{width:100%;height:100%;object-fit:cover;border-radius:10px;display:none;position:absolute;top:0;left:0}
@@ -33,13 +18,11 @@
     .title-container{flex:1;min-width:200px}
     h1{margin:0;font-size:20px;letter-spacing:0.6px;text-shadow:0 1px 3px rgba(0,0,0,0.3)}
     .subtitle{margin:6px 0 0;color:var(--muted);font-size:13px}
-    
     .admin-btn-container{position:absolute;top:16px;right:20px;z-index:10}
     .admin-btn{background:rgba(255,255,255,0.06);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:8px 14px;color:rgba(255,255,255,0.7);cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;transition:all .3s ease;white-space:nowrap}
     .admin-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
     .admin-btn.unlocked{background:rgba(245,158,11,0.2);border-color:rgba(245,158,11,0.4);color:#fbbf24;box-shadow:0 0 12px rgba(245,158,11,0.2)}
     .admin-btn.unlocked:hover{background:rgba(245,158,11,0.3);border-color:rgba(245,158,11,0.5);box-shadow:0 0 20px rgba(245,158,11,0.3)}
-    
     .config-section{background:rgba(0,0,0,0.15);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);padding:12px 14px;border-radius:10px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.08)}
     .config-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
     .config-item{background:rgba(96,165,250,0.08);padding:8px 12px;border-radius:6px;border:1px solid rgba(96,165,250,0.15)}
@@ -55,10 +38,9 @@
     .lock-indicator{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 8px;border-radius:4px}
     .lock-indicator.locked{background:rgba(239,68,68,0.2);color:#f87171}
     .lock-indicator.unlocked{background:rgba(245,158,11,0.2);color:#fbbf24}
-    
     .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(2,6,23,0.85);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);display:none;justify-content:center;align-items:center;z-index:1000;animation:modalFadeIn .3s ease}
     @keyframes modalFadeIn{from{opacity:0}to{opacity:1}}
-    .modal-content{background:rgba(0,0,0,0.5);backdrop-filter:blur(20px);border-radius:16px;padding:28px;box-shadow:0 20px 60px rgba(2,6,23,0.8);border:1px solid rgba(255,255,255,0.12);max-width:420px;width:90%;animation:modalSlideIn .35s cubic-bezier(0.4,0,0.2,1)}
+    .modal-content{background:rgba(0,0,0,0.5);backdrop-filter:blur(20px);border-radius:16px;padding:28px;box-shadow:0 20px 60px rgba(2,6,23,0.8);border:1px solid rgba(255,255,255,0.12);max-width:460px;width:90%;animation:modalSlideIn .35s cubic-bezier(0.4,0,0.2,1)}
     @keyframes modalSlideIn{from{opacity:0;transform:translateY(-20px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
     .modal-header{margin-bottom:20px;text-align:center}
     .modal-header h3{margin:0 0 8px;font-size:20px;color:#fff}
@@ -71,13 +53,19 @@
     .password-error.show{display:block;animation:shake .4s ease}
     @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
     .modal-footer{display:flex;justify-content:center;gap:10px}.modal-footer .btn{min-width:100px}
-    
+    .progress-container{margin:16px 0}
+    .progress-bar-wrapper{width:100%;height:12px;background:rgba(255,255,255,0.1);border-radius:6px;overflow:hidden;margin-bottom:8px}
+    .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-green));border-radius:6px;transition:width 0.3s ease;width:0%}
+    .progress-text{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+    .progress-percentage{font-weight:600;color:var(--accent)}
+    .upload-progress-area{display:none;margin-top:12px;padding:12px;background:rgba(0,0,0,0.2);border-radius:8px;border:1px solid rgba(255,255,255,0.08)}
+    .upload-progress-area.active{display:block}
+    .upload-area.uploading{border-color:var(--accent-gold);pointer-events:none;opacity:0.7}
     .btn{padding:8px 16px;border-radius:6px;border:none;font-weight:600;cursor:pointer;transition:all .2s ease;font-size:14px}
     .btn-primary{background:linear-gradient(135deg,var(--accent-green),var(--accent-green-hover));color:#fff}
     .btn-secondary{background:rgba(96,165,250,0.2);color:#e6eef8;border:1px solid rgba(96,165,250,0.3)}
     .btn-warning{background:linear-gradient(135deg,var(--accent-gold),#d97706);color:#fff}
     .btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.2)}
-    
     .file-manager-section{background:rgba(0,0,0,0.15);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);padding:16px 18px;border-radius:10px;margin-bottom:20px;border:1px solid rgba(255,255,255,0.08)}
     .file-manager-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
     .file-actions{display:flex;gap:10px}
@@ -98,7 +86,6 @@
     .btn-small.download{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff}
     .btn-small.delete{background:linear-gradient(135deg,var(--accent-red),var(--accent-red-hover));color:#fff}
     .btn-small:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,0.3)}
-    
     .editor-section,.preview-section{background:rgba(0,0,0,0.15);backdrop-filter:blur(5px);padding:16px 18px;border-radius:10px;margin-top:20px;display:none;border:1px solid rgba(255,255,255,0.08)}
     .editor-header,.preview-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
     .editor-content textarea{width:100%;height:300px;padding:12px;border-radius:6px;border:1px solid rgba(96,165,250,0.3);background:rgba(7,16,38,0.4);color:#e6eef8;font-family:monospace;font-size:14px;resize:vertical}
@@ -106,181 +93,63 @@
     .preview-image{max-width:100%;max-height:300px;display:block;margin:0 auto;border-radius:6px}
     .audio-player{width:100%;margin:20px 0;background:rgba(7,16,38,0.8);border-radius:8px;padding:16px}
     .audio-player audio{width:100%}.audio-info{margin-top:10px;text-align:center;color:var(--muted)}
-    
     .upload-area{margin-top:16px;padding:16px;border:2px dashed rgba(96,165,250,0.3);border-radius:8px;text-align:center;cursor:pointer;transition:all .3s}
     .upload-area:hover{border-color:var(--accent);background:rgba(96,165,250,0.05)}
     .upload-area.dragover{border-color:var(--accent-green);background:rgba(16,185,129,0.05)}
     .upload-text{color:var(--muted);margin-bottom:8px}
     .upload-button{display:inline-block;padding:8px 16px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;border-radius:4px;cursor:pointer}
-    .upload-file-list{margin-top:12px;display:none}
-    .upload-file-item{display:flex;align-items:center;justify-content:space-between;padding:8px;background:rgba(96,165,250,0.1);border-radius:4px;margin-bottom:4px}
-    
     .help-toggle{background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(5,150,105,0.05));border:1px solid rgba(16,185,129,0.2);padding:12px 16px;border-radius:10px;margin-bottom:16px;cursor:pointer}
     .help-header{display:flex;justify-content:space-between;align-items:center;font-weight:600;color:#10B981;font-size:15px}
     .help-icon{transition:transform .3s;font-size:18px}.help-toggle.active .help-icon{transform:rotate(180deg)}
     .help-content{max-height:0;overflow:hidden;opacity:0;transition:all .3s;margin-top:0}
     .help-content.show{max-height:500px;opacity:1;margin-top:12px}
-    
     .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);color:#fff;padding:10px 24px;border-radius:20px;font-size:14px;z-index:2000;animation:toastFade 2s ease forwards;border:1px solid rgba(255,255,255,0.2);white-space:nowrap;pointer-events:none}
     @keyframes toastFade{0%{opacity:0;transform:translateX(-50%) translateY(-10px)}15%{opacity:1;transform:translateX(-50%) translateY(0)}85%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-10px)}}
-    
     #breadcrumb{margin-bottom:12px;font-size:14px;padding:8px 12px;background:rgba(0,0,0,0.2);border-radius:6px;border:1px solid rgba(255,255,255,0.06)}
     #currentPath{font-weight:600;color:#f0f4fa!important}
-    
-    @media(max-width:768px){
-      body{padding:12px 8px}
-      .admin-btn-container{position:relative;top:auto;right:auto;margin-bottom:12px;display:flex;justify-content:flex-end}
-      header{padding-right:0}.file-manager-header{flex-direction:column;gap:10px}
-      .file-actions{flex-wrap:wrap;gap:6px}.btn{padding:6px 12px;font-size:12px}
-      .file-item{flex-wrap:wrap!important}.file-name{min-width:0!important;max-width:100%!important;white-space:normal!important;word-break:break-all!important}
-    }
+    @media(max-width:768px){body{padding:12px 8px}.admin-btn-container{position:relative;top:auto;right:auto;margin-bottom:12px;display:flex;justify-content:flex-end}header{padding-right:0}.file-manager-header{flex-direction:column;gap:10px}.file-actions{flex-wrap:wrap;gap:6px}.btn{padding:6px 12px;font-size:12px}.file-item{flex-wrap:wrap!important}.file-name{min-width:0!important;max-width:100%!important;white-space:normal!important;word-break:break-all!important}}
   </style>
 </head>
 <body>
-
-<div class="modal" id="adminModal">
-  <div class="modal-content">
-    <div class="modal-header"><h3>🔐 管理员验证</h3><div class="modal-subtitle">输入密码</div></div>
-    <div class="modal-body">
-      <div class="password-input-wrapper">
-        <input type="password" id="adminPassword" placeholder="请输入管理员密码" onkeydown="if(event.key==='Enter')verifyAdmin()">
-        <button class="password-toggle" onclick="togglePasswordVisibility()">👁️</button>
-      </div>
-      <div class="password-error" id="passwordError">❌ 密码错误，请重试</div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeAdminModal()">取消</button>
-      <button class="btn btn-warning" onclick="verifyAdmin()">🔑 验证</button>
-    </div>
-  </div>
-</div>
-
+<div class="modal" id="adminModal"><div class="modal-content"><div class="modal-header"><h3>🔐 管理员验证</h3><div class="modal-subtitle">输入密码</div></div><div class="modal-body"><div class="password-input-wrapper"><input type="password" id="adminPassword" placeholder="请输入管理员密码" onkeydown="if(event.key==='Enter')verifyAdmin()"><button class="password-toggle" onclick="togglePasswordVisibility()">👁️</button></div><div class="password-error" id="passwordError">❌ 密码错误，请重试</div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeAdminModal()">取消</button><button class="btn btn-warning" onclick="verifyAdmin()">🔑 验证</button></div></div></div>
+<div class="modal" id="downloadModal"><div class="modal-content"><div class="modal-header"><h3>📥 下载文件</h3><div class="modal-subtitle" id="downloadFileName">准备下载...</div></div><div class="modal-body"><div class="progress-container"><div class="progress-bar-wrapper"><div class="progress-bar-fill" id="downloadProgressBar"></div></div><div class="progress-text"><span id="downloadProgressLabel">正在准备...</span><span class="progress-percentage" id="downloadProgressPercent">0%</span></div></div><div style="text-align:center;margin-top:8px;font-size:12px;color:var(--muted)" id="downloadSpeedText"></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="cancelDownload()">取消</button></div></div></div>
 <div class="wrap">
-  <div class="admin-btn-container">
-    <button class="admin-btn" id="adminBtn" onclick="handleAdminClick()"><span class="admin-icon">🔒</span><span>管理员模式</span></button>
-  </div>
-  <header>
-    <div class="avatar"><img class="avatar-img" src="https://i.mituw.com/imgs/2026/03/15/de4945abb96be550.jpg" alt="头像"><div class="avatar-fallback">S3</div></div>
-    <div class="title-container"><h1>GitHub 文件管理器</h1><div class="subtitle">Small 3 的GitHub文件管理系统</div></div>
-  </header>
-
-  <div class="config-section">
-    <div class="config-info">
-      <div class="config-item">
-        <div class="config-label">GitHub用户名<span class="lock-indicator locked" id="usernameLockIndicator">🔒 锁定</span></div>
-        <div class="config-value"><div class="locked locked-state" id="usernameDisplay" contenteditable="false">small534460</div></div>
-      </div>
-      <div class="config-item">
-        <div class="config-label">仓库名称<span class="lock-indicator locked" id="repoLockIndicator">🔒 锁定</span></div>
-        <div class="config-value"><div class="locked locked-state" id="repoDisplay" contenteditable="false">wjcf</div></div>
-      </div>
-      <div class="config-item">
-        <div class="config-label">访问令牌</div>
-        <div class="config-value"><input type="password" id="token" placeholder="输入GitHub令牌 或 解锁管理员自动填充"></div>
-      </div>
-      <div class="config-item">
-        <div class="config-label">分支</div>
-        <div class="config-value"><div class="locked locked-state">main</div></div>
-      </div>
-    </div>
-    <div class="config-actions">
-      <button class="btn btn-primary" onclick="loadFiles()">📂 加载文件</button>
-      <button class="btn btn-secondary" onclick="saveConfig()">💾 保存配置</button>
-    </div>
-  </div>
-
-  <div class="help-toggle" onclick="toggleHelp()">
-    <div class="help-header"><span>📖 使用说明</span><span class="help-icon">▼</span></div>
-    <div class="help-content" id="helpContent">
-      <p>1. 输入令牌或解锁管理员自动填充后，点击"加载文件"</p>
-      <p>2. 🔐 点击右上角"管理员模式"解锁用户名/仓库名编辑</p>
-      <p>3. 不同文件类型操作：📄文本可编辑 🎵音乐可播放 🎬视频可预览 🖼️图片可查看 📎全部可下载</p>
-      <p>4. 新建文件夹请使用"新建文件"功能，格式：文件夹名/.keep</p>
-    </div>
-  </div>
-
-  <div class="file-manager-section">
-    <div class="file-manager-header">
-      <h3 style="margin:0">📂 文件管理器</h3>
-      <div class="file-actions">
-        <button class="btn btn-primary" onclick="showCreateFolderModal()">📁 新建文件夹</button>
-        <button class="btn btn-primary" onclick="showCreateFileModal()">📄 新建文件</button>
-        <button class="btn btn-secondary" onclick="loadFiles()">🔄 刷新</button>
-      </div>
-    </div>
-    <div id="breadcrumb"><span>路径: </span><span id="currentPath">/</span></div>
-    <div class="upload-area" id="uploadArea" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)">
-      <div class="upload-text">📤 拖放文件或点击上传</div>
-      <input type="file" id="fileInput" multiple style="display:none" onchange="handleFileSelect(event)">
-      <div class="upload-button" onclick="document.getElementById('fileInput').click()">选择文件</div>
-      <div class="upload-file-list" id="uploadFileList"></div>
-    </div>
-    <div class="file-list" id="fileList"><div class="file-item" style="text-align:center;color:var(--muted);justify-content:center"><span>点击"加载文件"按钮查看文件列表</span></div></div>
-  </div>
-
-  <div class="editor-section" id="editorSection">
-    <div class="editor-header"><h4 id="editorTitle">编辑文件</h4><div class="file-actions"><button class="btn btn-primary" onclick="saveFile()">💾 保存</button><button class="btn btn-secondary" onclick="closeEditor()">取消</button></div></div>
-    <div class="editor-content"><textarea id="fileContent" placeholder="文件内容..."></textarea></div>
-  </div>
-  <div class="preview-section" id="previewSection">
-    <div class="preview-header"><h4 id="previewTitle">文件预览</h4><div class="file-actions"><button class="btn btn-primary" onclick="downloadCurrentFile()">📥 下载</button><button class="btn btn-secondary" onclick="closePreview()">关闭</button></div></div>
-    <div class="preview-content" id="previewContent"></div>
-  </div>
+  <div class="admin-btn-container"><button class="admin-btn" id="adminBtn" onclick="handleAdminClick()"><span class="admin-icon">🔒</span><span>管理员模式</span></button></div>
+  <header><div class="avatar"><img class="avatar-img" src="https://i.mituw.com/imgs/2026/03/15/de4945abb96be550.jpg" alt="头像"><div class="avatar-fallback">S3</div></div><div class="title-container"><h1>GitHub 文件管理器</h1><div class="subtitle">Small 3 的GitHub文件管理系统</div></div></header>
+  <div class="config-section"><div class="config-info"><div class="config-item"><div class="config-label">GitHub用户名<span class="lock-indicator locked" id="usernameLockIndicator">🔒 锁定</span></div><div class="config-value"><div class="locked locked-state" id="usernameDisplay" contenteditable="false">small534460</div></div></div><div class="config-item"><div class="config-label">仓库名称<span class="lock-indicator locked" id="repoLockIndicator">🔒 锁定</span></div><div class="config-value"><div class="locked locked-state" id="repoDisplay" contenteditable="false">wjcf</div></div></div><div class="config-item"><div class="config-label">访问令牌</div><div class="config-value"><input type="password" id="token" placeholder="输入GitHub令牌 或 解锁管理员自动填充"></div></div><div class="config-item"><div class="config-label">分支</div><div class="config-value"><div class="locked locked-state">main</div></div></div></div><div class="config-actions"><button class="btn btn-primary" onclick="loadFiles()">📂 加载文件</button><button class="btn btn-secondary" onclick="saveConfig()">💾 保存配置</button></div></div>
+  <div class="help-toggle" onclick="toggleHelp()"><div class="help-header"><span>📖 使用说明</span><span class="help-icon">▼</span></div><div class="help-content" id="helpContent"><p>1. 输入令牌后点击"加载文件"</p><p>2. 🔐 点击"管理员模式"解锁编辑</p><p>3. 大文件自动分片上传（>20MB），分片直接显示</p><p>4. 下载时自动收集所有同名分片合并</p><p>5. 新建文件夹：使用"新建文件"，格式：文件夹名/.keep</p></div></div>
+  <div class="file-manager-section"><div class="file-manager-header"><h3 style="margin:0">📂 文件管理器</h3><div class="file-actions"><button class="btn btn-primary" onclick="showCreateFolderModal()">📁 新建文件夹</button><button class="btn btn-primary" onclick="showCreateFileModal()">📄 新建文件</button><button class="btn btn-secondary" onclick="loadFiles()">🔄 刷新</button></div></div><div id="breadcrumb"><span>路径: </span><span id="currentPath">/</span></div><div class="upload-area" id="uploadArea" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)"><div class="upload-text" id="uploadText">📤 拖放文件或点击上传（>20MB自动分片）</div><input type="file" id="fileInput" multiple style="display:none" onchange="handleFileSelect(event)"><div class="upload-button" id="uploadSelectBtn" onclick="document.getElementById('fileInput').click()">选择文件</div><div class="upload-progress-area" id="uploadProgressArea"><div class="progress-container"><div class="progress-bar-wrapper"><div class="progress-bar-fill" id="uploadProgressBar"></div></div><div class="progress-text"><span id="uploadProgressLabel">正在上传...</span><span class="progress-percentage" id="uploadProgressPercent">0%</span></div></div><div style="text-align:center;font-size:11px;color:var(--muted);margin-top:4px" id="uploadSpeedText"></div></div></div><div class="file-list" id="fileList"><div class="file-item" style="text-align:center;color:var(--muted);justify-content:center"><span>点击"加载文件"按钮查看文件列表</span></div></div></div>
+  <div class="editor-section" id="editorSection"><div class="editor-header"><h4 id="editorTitle">编辑文件</h4><div class="file-actions"><button class="btn btn-primary" onclick="saveFile()">💾 保存</button><button class="btn btn-secondary" onclick="closeEditor()">取消</button></div></div><div class="editor-content"><textarea id="fileContent" placeholder="文件内容..."></textarea></div></div>
+  <div class="preview-section" id="previewSection"><div class="preview-header"><h4 id="previewTitle">文件预览</h4><div class="file-actions"><button class="btn btn-primary" onclick="downloadCurrentFile()">📥 下载</button><button class="btn btn-secondary" onclick="closePreview()">关闭</button></div></div><div class="preview-content" id="previewContent"></div></div>
 </div>
-
-<div class="modal" id="folderModal">
-  <div class="modal-content"><div class="modal-header"><h3>📁 新建文件夹</h3></div><div class="modal-body"><div class="config-value"><input type="text" id="folderName" placeholder="文件夹名称"></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('folderModal')">取消</button><button class="btn btn-primary" onclick="createFolder()">创建</button></div></div>
-</div>
-<div class="modal" id="fileModal">
-  <div class="modal-content"><div class="modal-header"><h3>📄 新建文件</h3></div><div class="modal-body"><div class="config-value"><input type="text" id="fileName" placeholder="文件名（含扩展名）"></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('fileModal')">取消</button><button class="btn btn-primary" onclick="createFile()">创建</button></div></div>
-</div>
+<div class="modal" id="folderModal"><div class="modal-content"><div class="modal-header"><h3>📁 新建文件夹</h3></div><div class="modal-body"><div class="config-value"><input type="text" id="folderName" placeholder="文件夹名称"></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('folderModal')">取消</button><button class="btn btn-primary" onclick="createFolder()">创建</button></div></div></div>
+<div class="modal" id="fileModal"><div class="modal-content"><div class="modal-header"><h3>📄 新建文件</h3></div><div class="modal-body"><div class="config-value"><input type="text" id="fileName" placeholder="文件名（含扩展名）"></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('fileModal')">取消</button><button class="btn btn-primary" onclick="createFile()">创建</button></div></div></div>
 
 <script>
-// ╔══════════════════════════════════════════════════════╗
-// ║  🔐 管理员配置                                     ║
-// ╚══════════════════════════════════════════════════════╝
-var STORED_PASSWORD_HASH = '0cd875127059c80ae5744c59a4e1183a123f4f9dea543f9391bcff9317f0b4f6'; // "Sb534460"的SHA-256
-var ENCRYPTED_TOKEN_HEX = '6bb0054d1f10f158a7231e2bde9b6a772b4a16d8921556e5d8f291fe6d9fdfc57ba04450090f9f63';
-var isAdminUnlocked = false;
+var STORED_PASSWORD_HASH='0cd875127059c80ae5744c59a4e1183a123f4f9dea543f9391bcff9317f0b4f6';
+var ENCRYPTED_TOKEN_HEX='6bb0054d1f10f158a7231e2bde9b6a772b4a16d8921556e5d8f291fe6d9fdfc57ba04450090f9f63';
+var isAdminUnlocked=false;
+var CHUNK_SIZE=20*1024*1024;
+var uploadAbortController=null;
+var downloadAbortController=null;
 
 async function sha256(msg){var buf=new TextEncoder().encode(msg);var h=await crypto.subtle.digest('SHA-256',buf);return Array.from(new Uint8Array(h)).map(function(b){return b.toString(16).padStart(2,'0')}).join('')}
+function decryptToken(pw){return crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw)).then(function(h){var hb=new Uint8Array(h),eb=[];for(var i=0;i<ENCRYPTED_TOKEN_HEX.length;i+=2)eb.push(parseInt(ENCRYPTED_TOKEN_HEX.substr(i,2),16));var db=[];for(var i=0;i<eb.length;i++)db.push(eb[i]^hb[i%hb.length]);return new TextDecoder().decode(new Uint8Array(db))})}
+function showToast(m){var t=document.querySelector('.toast');if(t)t.remove();var d=document.createElement('div');d.className='toast';d.textContent=m;document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},2000)}
+function showModal(id){document.getElementById(id).style.display='flex'}
+function closeModal(id){document.getElementById(id).style.display='none';if(id==='folderModal')document.getElementById('folderName').value='';if(id==='fileModal')document.getElementById('fileName').value=''}
+function toggleHelp(){var c=document.getElementById('helpContent'),t=document.querySelector('.help-toggle');c.classList.toggle('show');t.classList.toggle('active')}
+function getUsername(){return document.getElementById('usernameDisplay').textContent.trim()}
+function getRepo(){return document.getElementById('repoDisplay').textContent.trim()}
+function getFileIcon(n){var e=n.split('.').pop().toLowerCase();if(e==='')return'folder';if(['jpg','jpeg','png','gif','bmp','svg','webp'].includes(e))return'image';if(['mp3','wav','ogg','flac','m4a','aac'].includes(e))return'music';if(['zip','rar','7z','tar','gz','bz2'].includes(e))return'archive';if(['txt','md','js','html','css','json','xml','yml','yaml','ini','log'].includes(e))return'text';if(['py','java','cpp','c','php','rb','go'].includes(e))return'code';if(['mp4','webm','avi','mov','mkv'].includes(e))return'video';return'other'}
+function parsePartFile(fn){var m=fn.match(/^(.+)\.part(\d{3})$/);return m?{name:m[1],index:parseInt(m[2])}:null}
 
-function decryptToken(password){
-  return crypto.subtle.digest('SHA-256',new TextEncoder().encode(password)).then(function(hash){
-    var hb=new Uint8Array(hash);var eb=[];
-    for(var i=0;i<ENCRYPTED_TOKEN_HEX.length;i+=2){eb.push(parseInt(ENCRYPTED_TOKEN_HEX.substr(i,2),16))}
-    var db=[];for(var i=0;i<eb.length;i++){db.push(eb[i]^hb[i%hb.length])}
-    return new TextDecoder().decode(new Uint8Array(db));
-  });
-}
+function saveConfig(){var c={token:document.getElementById('token').value,username:getUsername(),repo:getRepo()};localStorage.setItem('githubFileManagerConfig',JSON.stringify(c));showToast('💾 配置已保存')}
+function loadConfig(){var s=localStorage.getItem('githubFileManagerConfig');if(s){var c=JSON.parse(s);document.getElementById('token').value=c.token||'';if(c.username)document.getElementById('usernameDisplay').textContent=c.username;if(c.repo)document.getElementById('repoDisplay').textContent=c.repo}}
 
-async function verifyAdmin(){
-  var pw=document.getElementById('adminPassword').value,pe=document.getElementById('passwordError');
-  if(!pw){pe.textContent='❌ 请输入密码';pe.classList.add('show');return}
-  try{
-    var ih=await sha256(pw);
-    if(ih===STORED_PASSWORD_HASH){
-      pe.classList.remove('show');isAdminUnlocked=true;unlockAdminMode();
-      try{var tk=await decryptToken(pw);document.getElementById('token').value=tk;showToast('✅ 已解锁！令牌已自动填充')}catch(e){showToast('✅ 已解锁！令牌解密失败，请手动输入')}
-      closeAdminModal()
-    }else{pe.textContent='❌ 密码错误';pe.classList.add('show');document.getElementById('adminPassword').value=''}
-  }catch(e){pe.textContent='❌ 验证出错';pe.classList.add('show')}
-}
-
-function lockAdminMode(){
-  isAdminUnlocked=false;var b=document.getElementById('adminBtn');b.classList.remove('unlocked');b.querySelector('.admin-icon').textContent='🔒';b.querySelector('span:last-child').textContent='管理员模式';
-  var u=document.getElementById('usernameDisplay'),r=document.getElementById('repoDisplay');
-  u.contentEditable='false';r.contentEditable='false';u.classList.add('locked-state');r.classList.add('locked-state');u.classList.remove('editable');r.classList.remove('editable');
-  document.getElementById('usernameLockIndicator').textContent='🔒 锁定';document.getElementById('usernameLockIndicator').className='lock-indicator locked';
-  document.getElementById('repoLockIndicator').textContent='🔒 锁定';document.getElementById('repoLockIndicator').className='lock-indicator locked';
-}
-function unlockAdminMode(){
-  isAdminUnlocked=true;var b=document.getElementById('adminBtn');b.classList.add('unlocked');b.querySelector('.admin-icon').textContent='🔓';b.querySelector('span:last-child').textContent='已解锁';
-  var u=document.getElementById('usernameDisplay'),r=document.getElementById('repoDisplay');
-  u.contentEditable='true';r.contentEditable='true';u.classList.remove('locked-state');r.classList.remove('locked-state');u.classList.add('editable');r.classList.add('editable');
-  document.getElementById('usernameLockIndicator').textContent='🔓 已解锁';document.getElementById('usernameLockIndicator').className='lock-indicator unlocked';
-  document.getElementById('repoLockIndicator').textContent='🔓 已解锁';document.getElementById('repoLockIndicator').className='lock-indicator unlocked';
-}
+async function verifyAdmin(){var pw=document.getElementById('adminPassword').value,pe=document.getElementById('passwordError');if(!pw){pe.textContent='❌ 请输入密码';pe.classList.add('show');return}try{var ih=await sha256(pw);if(ih===STORED_PASSWORD_HASH){pe.classList.remove('show');isAdminUnlocked=true;unlockAdminMode();try{var tk=await decryptToken(pw);document.getElementById('token').value=tk;showToast('✅ 已解锁')}catch(e){showToast('✅ 已解锁')}closeAdminModal()}else{pe.textContent='❌ 密码错误';pe.classList.add('show');document.getElementById('adminPassword').value=''}}catch(e){pe.textContent='❌ 验证出错';pe.classList.add('show')}}
+function lockAdminMode(){isAdminUnlocked=false;var b=document.getElementById('adminBtn');b.classList.remove('unlocked');b.querySelector('.admin-icon').textContent='🔒';b.querySelector('span:last-child').textContent='管理员模式';var u=document.getElementById('usernameDisplay'),r=document.getElementById('repoDisplay');u.contentEditable='false';r.contentEditable='false';u.classList.add('locked-state');r.classList.add('locked-state');u.classList.remove('editable');r.classList.remove('editable');document.getElementById('usernameLockIndicator').textContent='🔒 锁定';document.getElementById('usernameLockIndicator').className='lock-indicator locked';document.getElementById('repoLockIndicator').textContent='🔒 锁定';document.getElementById('repoLockIndicator').className='lock-indicator locked'}
+function unlockAdminMode(){isAdminUnlocked=true;var b=document.getElementById('adminBtn');b.classList.add('unlocked');b.querySelector('.admin-icon').textContent='🔓';b.querySelector('span:last-child').textContent='已解锁';var u=document.getElementById('usernameDisplay'),r=document.getElementById('repoDisplay');u.contentEditable='true';r.contentEditable='true';u.classList.remove('locked-state');r.classList.remove('locked-state');u.classList.add('editable');r.classList.add('editable');document.getElementById('usernameLockIndicator').textContent='🔓 已解锁';document.getElementById('usernameLockIndicator').className='lock-indicator unlocked';document.getElementById('repoLockIndicator').textContent='🔓 已解锁';document.getElementById('repoLockIndicator').className='lock-indicator unlocked'}
 function handleAdminClick(){if(isAdminUnlocked){if(confirm('锁定管理员模式？')){lockAdminMode();showToast('🔒 已锁定')}}else{showAdminModal()}}
 function showAdminModal(){document.getElementById('adminModal').style.display='flex';document.getElementById('adminPassword').value='';document.getElementById('passwordError').classList.remove('show');setTimeout(function(){document.getElementById('adminPassword').focus()},300)}
 function closeAdminModal(){document.getElementById('adminModal').style.display='none';document.getElementById('adminPassword').value='';document.getElementById('passwordError').classList.remove('show')}
@@ -288,132 +157,77 @@ function togglePasswordVisibility(){var i=document.getElementById('adminPassword
 document.addEventListener('click',function(e){if(e.target===document.getElementById('adminModal'))closeAdminModal()})
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.getElementById('adminModal').style.display==='flex')closeAdminModal()})
 
-// ╔══════════════════════════════════════════════════════╗
-// ║  📋 Toast + 工具函数                               ║
-// ╚══════════════════════════════════════════════════════╝
-function showToast(m){var t=document.querySelector('.toast');if(t)t.remove();var d=document.createElement('div');d.className='toast';d.textContent=m;document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},2000)}
-function showModal(id){document.getElementById(id).style.display='flex'}
-function closeModal(id){document.getElementById(id).style.display='none';if(id==='folderModal')document.getElementById('folderName').value='';if(id==='fileModal')document.getElementById('fileName').value=''}
-function toggleHelp(){var c=document.getElementById('helpContent'),t=document.querySelector('.help-toggle');c.classList.toggle('show');t.classList.toggle('active')}
-function decodeBase64Content(b64){try{return new TextDecoder('utf-8').decode(new Uint8Array(atob(b64).split('').map(function(c){return c.charCodeAt(0)})))}catch(e){try{return atob(b64)}catch(e2){return"解码失败"}}}
-function getFileIcon(n){var e=n.split('.').pop().toLowerCase();if(e==='')return'folder';if(['jpg','jpeg','png','gif','bmp','svg','webp'].includes(e))return'image';if(['mp3','wav','ogg','flac','m4a','aac'].includes(e))return'music';if(['zip','rar','7z','tar','gz','bz2'].includes(e))return'archive';if(['txt','md','js','html','css','json','xml','yml','yaml','ini','log'].includes(e))return'text';if(['py','java','cpp','c','php','rb','go'].includes(e))return'code';if(['mp4','webm','avi','mov','mkv'].includes(e))return'video';return'other'}
+async function githubApiRequest(endpoint,method,data){method=method||'GET';data=data||null;var token=document.getElementById('token').value;if(!token){alert('请先输入GitHub访问令牌！');return null}var url='https://api.github.com/repos/'+getUsername()+'/'+getRepo()+'/'+endpoint;var opts={method:method,headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}};if(data)opts.body=JSON.stringify(data);try{var r=await fetch(url,opts);if(r.status===204)return null;if(!r.ok)throw new Error('API错误:'+r.status);return await r.json()}catch(e){alert('请求失败:'+e.message);return null}}
 
-// ╔══════════════════════════════════════════════════════╗
-// ║  💾 配置 + API                                     ║
-// ╚══════════════════════════════════════════════════════╝
-function getUsername(){return document.getElementById('usernameDisplay').textContent.trim()}
-function getRepo(){return document.getElementById('repoDisplay').textContent.trim()}
-function saveConfig(){var c={token:document.getElementById('token').value,username:getUsername(),repo:getRepo()};localStorage.setItem('githubFileManagerConfig',JSON.stringify(c));showToast('💾 配置已保存')}
-function loadConfig(){var s=localStorage.getItem('githubFileManagerConfig');if(s){var c=JSON.parse(s);document.getElementById('token').value=c.token||'';if(c.username)document.getElementById('usernameDisplay').textContent=c.username;if(c.repo)document.getElementById('repoDisplay').textContent=c.repo}}
+function blobToBase64(blob){return new Promise(function(resolve,reject){var reader=new FileReader();reader.onload=function(){resolve(reader.result.split(',')[1])};reader.onerror=reject;reader.readAsDataURL(blob)})}
 
-async function githubApiRequest(endpoint,method,data){
-  method=method||'GET';data=data||null;var token=document.getElementById('token').value;
-  if(!token){alert('请先输入GitHub访问令牌！');return null}
-  var url='https://api.github.com/repos/'+getUsername()+'/'+getRepo()+'/'+endpoint;
-  var opts={method:method,headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}};
-  if(data)opts.body=JSON.stringify(data);
-  try{var r=await fetch(url,opts);if(r.status===204)return null;if(!r.ok)throw new Error('API错误:'+r.status);return await r.json()}catch(e){alert('请求失败:'+e.message);return null}
-}
+async function uploadFileInChunks(file,filePath){uploadAbortController=new AbortController();var token=document.getElementById('token').value;var totalChunks=Math.ceil(file.size/CHUNK_SIZE);var startTime=Date.now();var pa=document.getElementById('uploadProgressArea'),pb=document.getElementById('uploadProgressBar'),pl=document.getElementById('uploadProgressLabel'),pp=document.getElementById('uploadProgressPercent'),st=document.getElementById('uploadSpeedText'),ua=document.getElementById('uploadArea');pa.classList.add('active');ua.classList.add('uploading');document.getElementById('uploadText').textContent='⏳ 正在上传：'+file.name;for(var i=0;i<totalChunks;i++){var start=i*CHUNK_SIZE,end=Math.min(start+CHUNK_SIZE,file.size),chunk=file.slice(start,end),chunkName=filePath+'.part'+String(i).padStart(3,'0');var chunkContent=await blobToBase64(chunk);pl.textContent='分片 '+(i+1)+'/'+totalChunks;pp.textContent=Math.round((i/totalChunks)*100)+'%';pb.style.width=((i/totalChunks)*100)+'%';var elapsed=(Date.now()-startTime)/1000;if(elapsed>0){var speed=(i*CHUNK_SIZE)/elapsed;if(speed>1048576)st.textContent=(speed/1048576).toFixed(1)+' MB/s';else if(speed>1024)st.textContent=(speed/1024).toFixed(1)+' KB/s'}try{var result=await fetch('https://api.github.com/repos/'+getUsername()+'/'+getRepo()+'/contents/'+chunkName,{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({message:'分片 '+(i+1)+'/'+totalChunks+': '+file.name,content:chunkContent,branch:'main'}),signal:uploadAbortController.signal});if(!result.ok)throw new Error('HTTP '+result.status)}catch(err){if(err.name==='AbortError')showToast('⚠️ 已取消');else showToast('❌ 分片'+(i+1)+'失败');throw err}}pp.textContent='100%';pb.style.width='100%';pl.textContent='✅ 上传完成！';st.textContent=(file.size/1048576).toFixed(1)+' MB | '+totalChunks+' 分片';setTimeout(function(){pa.classList.remove('active');ua.classList.remove('uploading');document.getElementById('uploadText').textContent='📤 拖放文件或点击上传（>20MB自动分片）'},2500)}
 
-// ╔══════════════════════════════════════════════════════╗
-// ║  📂 文件操作                                       ║
-// ╚══════════════════════════════════════════════════════╝
-var currentPath='',currentFile=null,currentPreviewFile=null;
-
-async function loadFiles(path){
-  path=path||'';currentPath=path;document.getElementById('currentPath').textContent=path||'/';
-  if(!document.getElementById('token').value){alert('请先输入令牌');return}
-  var fl=document.getElementById('fileList');fl.innerHTML='<div class="file-item" style="text-align:center;color:var(--muted);justify-content:center"><span>⏳ 加载中...</span></div>';
+// ★★★ 核心修复：分片下载用 download_url 不带 Authorization ★★★
+async function downloadAndMergeChunks(filePath,displayName){
+  downloadAbortController=new AbortController();var token=document.getElementById('token').value;
+  var dm=document.getElementById('downloadModal'),pb=document.getElementById('downloadProgressBar'),pl=document.getElementById('downloadProgressLabel'),pp=document.getElementById('downloadProgressPercent'),st=document.getElementById('downloadSpeedText'),fn=document.getElementById('downloadFileName');
+  dm.style.display='flex';fn.textContent=displayName;pb.style.width='0%';pp.textContent='0%';pl.textContent='正在扫描分片...';st.textContent='';
+  window._cancelDownload=function(){if(downloadAbortController)downloadAbortController.abort();dm.style.display='none';showToast('⚠️ 下载已取消')};
   try{
-    var ep=path?'contents/'+path:'contents',contents=await githubApiRequest(ep);
-    if(!contents){fl.innerHTML='<div class="file-item" style="text-align:center;color:var(--muted);justify-content:center"><span>文件夹为空</span></div>';return}
-    fl.innerHTML='';
-    if(path){var pi=document.createElement('div');pi.className='file-item';pi.innerHTML='<div class="file-icon folder"></div><div class="file-name" style="font-style:italic">.. (返回上级)</div>';pi.onclick=function(){loadFiles(path.split('/').slice(0,-1).join('/'))};fl.appendChild(pi)}
-    contents.forEach(function(item){
-      var fi=document.createElement('div');fi.className='file-item';var ft=item.type==='dir'?'folder':getFileIcon(item.name),fc='file-icon '+ft;
-      if(item.type==='dir'){
-        fi.innerHTML='<div class="'+fc+'"></div><div class="file-name">'+item.name+'/</div><div class="file-size">文件夹</div><div class="file-actions-small"><button class="btn-small view" onclick="event.stopPropagation();loadFiles(\''+item.path+'\')">打开</button><button class="btn-small delete" onclick="event.stopPropagation();deleteItem(\''+item.path+'\',true)">删除</button></div>';
-        fi.onclick=function(){loadFiles(item.path)}
-      }else{
-        var fe=item.name.split('.').pop().toLowerCase(),isImg=['jpg','jpeg','png','gif','bmp','svg','webp'].includes(fe),isMus=['mp3','wav','ogg','flac','m4a','aac'].includes(fe),isTxt=['txt','md','js','html','css','json','xml','yml','yaml','ini','log'].includes(fe),isVid=['mp4','webm','mov','avi','mkv'].includes(fe);
-        var ab='';if(isTxt)ab='<button class="btn-small edit" onclick="event.stopPropagation();editFile(\''+item.path+'\',\''+item.name+'\')">编辑</button><button class="btn-small download" onclick="event.stopPropagation();downloadFile(\''+item.path+'\',\''+item.name+'\')">下载</button>';
-        else if(isMus)ab='<button class="btn-small play" onclick="event.stopPropagation();previewFile(\''+item.path+'\',\''+item.name+'\',\'music\')">播放</button><button class="btn-small download" onclick="event.stopPropagation();downloadFile(\''+item.path+'\',\''+item.name+'\')">下载</button>';
-        else if(isImg)ab='<button class="btn-small view" onclick="event.stopPropagation();previewFile(\''+item.path+'\',\''+item.name+'\',\'image\')">查看</button><button class="btn-small download" onclick="event.stopPropagation();downloadFile(\''+item.path+'\',\''+item.name+'\')">下载</button>';
-        else if(isVid)ab='<button class="btn-small view" onclick="event.stopPropagation();previewFile(\''+item.path+'\',\''+item.name+'\',\'video\')">预览</button><button class="btn-small download" onclick="event.stopPropagation();downloadFile(\''+item.path+'\',\''+item.name+'\')">下载</button>';
-        else ab='<button class="btn-small download" onclick="event.stopPropagation();downloadFile(\''+item.path+'\',\''+item.name+'\')">下载</button>';
-        var sk=Math.round(item.size/1024*100)/100;
-        fi.innerHTML='<div class="'+fc+'"></div><div class="file-name">'+item.name+'</div><div class="file-size">'+sk+' KB</div><div class="file-actions-small">'+ab+'<button class="btn-small delete" onclick="event.stopPropagation();deleteItem(\''+item.path+'\',false)">删除</button></div>';
-        if(isTxt)fi.onclick=function(){editFile(item.path,item.name)};else if(isMus||isImg)fi.onclick=function(){previewFile(item.path,item.name,isMus?'music':'image')};else fi.onclick=function(){downloadFile(item.path,item.name)}
-      }
-      fl.appendChild(fi)
-    })
-  }catch(e){fl.innerHTML='<div class="file-item" style="text-align:center;color:var(--muted);justify-content:center"><span>加载失败</span></div>'}
+    var startTime=Date.now();
+    var dirPath=filePath.substring(0,filePath.lastIndexOf('/')),baseName=filePath.substring(filePath.lastIndexOf('/')+1);
+    var listEp=dirPath?'contents/'+dirPath:'contents',allFiles=await githubApiRequest(listEp);
+    var parts=[];if(allFiles&&Array.isArray(allFiles)){allFiles.forEach(function(item){if(item.type==='file'){var p=parsePartFile(item.name);if(p&&p.name===baseName)parts.push({index:p.index,path:item.path,download_url:item.download_url})}})}
+    parts.sort(function(a,b){return a.index-b.index});if(parts.length===0)throw new Error('未找到分片');
+    var totalParts=parts.length;pl.textContent='下载分片 1/'+totalParts;var chunks=[];
+    for(var i=0;i<totalParts;i++){
+      var part=parts[i];pl.textContent='下载分片 '+(i+1)+'/'+totalParts;var data=null;
+      // 方法1：download_url 直接下载（不带 Authorization header）
+      if(part.download_url){try{var resp=await fetch(part.download_url,{signal:downloadAbortController.signal});if(resp.ok)data=new Uint8Array(await resp.arrayBuffer())}catch(e){console.warn('分片'+(i+1)+' download_url 失败:',e.message)}}
+      // 方法2：降级用 API content
+      if(!data||data.length===0){var pd=await githubApiRequest('contents/'+part.path);if(pd&&pd.content){var bs=atob(pd.content.replace(/\s/g,''));data=new Uint8Array(bs.length);for(var j=0;j<bs.length;j++)data[j]=bs.charCodeAt(j)}}
+      if(!data||data.length===0)throw new Error('分片'+(i+1)+'无数据');
+      chunks.push(data);
+      var pct=Math.round(((i+1)/totalParts)*100);pp.textContent=pct+'%';pb.style.width=pct+'%';
+      var elapsed=(Date.now()-startTime)/1000;if(elapsed>0){var speed=((i+1)*CHUNK_SIZE)/elapsed;if(speed>1048576)st.textContent=(speed/1048576).toFixed(1)+' MB/s';else if(speed>1024)st.textContent=(speed/1024).toFixed(1)+' KB/s'}
+    }
+    pl.textContent='正在合并...';var totalSize=chunks.reduce(function(s,c){return s+c.length},0);var merged=new Uint8Array(totalSize);var offset=0;for(var k=0;k<chunks.length;k++){merged.set(chunks[k],offset);offset+=chunks[k].length}
+    var blob=new Blob([merged]);triggerDownload(blob,displayName);
+    pp.textContent='100%';pb.style.width='100%';pl.textContent='✅ 下载完成！';st.textContent=(totalSize/1048576).toFixed(1)+' MB';
+    setTimeout(function(){dm.style.display='none'},1500);
+  }catch(err){if(err.name==='AbortError'){dm.style.display='none'}else{console.error(err);pl.textContent='❌ 下载失败: '+err.message;setTimeout(function(){dm.style.display='none'},3000)}}
 }
 
-async function previewFile(path,name,type){
-  currentPreviewFile={path:path,name:name,type:type};
-  try{var f=await githubApiRequest('contents/'+path);if(f&&f.download_url){document.getElementById('previewTitle').textContent='预览: '+name;document.getElementById('previewSection').style.display='block';document.getElementById('editorSection').style.display='none';var pc=document.getElementById('previewContent');
-  if(type==='image')pc.innerHTML='<img src="'+f.download_url+'" class="preview-image"><p style="text-align:center;color:var(--muted)">'+name+'</p>';
-  else if(type==='music')pc.innerHTML='<div class="audio-player"><audio controls><source src="'+f.download_url+'"></audio><div class="audio-info">🎵 '+name+'</div></div>';
-  else if(type==='video')pc.innerHTML='<video controls style="max-width:100%;max-height:320px;display:block;margin:0 auto;border-radius:6px"><source src="'+f.download_url+'"></video><div style="text-align:center;color:var(--muted);margin-top:12px">🎬 '+name+'</div>';
-  else{var c=decodeBase64Content(f.content.replace(/\s/g,''));pc.innerHTML='<pre style="white-space:pre-wrap;word-break:break-all;font-family:monospace">'+c+'</pre>'}}}catch(e){alert('预览失败')}
+function triggerDownload(blob,filename){var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url)}
+function cancelDownload(){if(window._cancelDownload)window._cancelDownload()}
+
+async function smartDownload(filePath,fileName){
+  var parsed=parsePartFile(fileName);
+  if(parsed){var dp=filePath.substring(0,filePath.lastIndexOf('/'));var bp=dp?dp+'/'+parsed.name:parsed.name;await downloadAndMergeChunks(bp,parsed.name)}
+  else{var dp=filePath.substring(0,filePath.lastIndexOf('/'));var le=dp?'contents/'+dp:'contents';try{var af=await githubApiRequest(le);var hp=false;if(af&&Array.isArray(af)){af.forEach(function(item){if(item.type==='file'){var p=parsePartFile(item.name);if(p&&p.name===fileName)hp=true}})}if(hp){await downloadAndMergeChunks(filePath,fileName)}else{await downloadSingle(filePath,fileName)}}catch(e){await downloadSingle(filePath,fileName)}}
 }
+
+async function downloadSingle(path,name){try{var f=await githubApiRequest('contents/'+path);if(f&&f.download_url){var a=document.createElement('a');a.href=f.download_url;a.download=name;document.body.appendChild(a);a.click();a.remove()}else if(f&&f.content){var bs=atob(f.content.replace(/\s/g,''));var bytes=new Uint8Array(bs.length);for(var i=0;i<bs.length;i++)bytes[i]=bs.charCodeAt(i);var blob=new Blob([bytes]);triggerDownload(blob,name)}}catch(e){alert('下载失败: '+e.message)}}
+
+var currentPath='',currentFile=null,currentPreviewFile=null;
+async function loadFiles(path){path=path||'';currentPath=path;document.getElementById('currentPath').textContent=path||'/';if(!document.getElementById('token').value){alert('请先输入令牌');return}var fl=document.getElementById('fileList');fl.innerHTML='<div class="file-item" style="text-align:center;color:var(--muted);justify-content:center"><span>⏳ 加载中...</span></div>';try{var ep=path?'contents/'+path:'contents',contents=await githubApiRequest(ep);if(!contents){fl.innerHTML='<div class="file-item" style="text-align:center;color:var(--muted);justify-content:center"><span>文件夹为空</span></div>';return}fl.innerHTML='';if(path){var pi=document.createElement('div');pi.className='file-item';pi.innerHTML='<div class="file-icon folder"></div><div class="file-name" style="font-style:italic">.. (返回上级)</div>';pi.onclick=function(){loadFiles(path.split('/').slice(0,-1).join('/'))};fl.appendChild(pi)}contents.forEach(function(item){var fi=document.createElement('div');fi.className='file-item';var ft=item.type==='dir'?'folder':getFileIcon(item.name),fc='file-icon '+ft;if(item.type==='dir'){fi.innerHTML='<div class="'+fc+'"></div><div class="file-name">'+item.name+'/</div><div class="file-size">文件夹</div><div class="file-actions-small"><button class="btn-small view" onclick="event.stopPropagation();loadFiles(\''+item.path+'\')">打开</button><button class="btn-small delete" onclick="event.stopPropagation();deleteItem(\''+item.path+'\',true)">删除</button></div>';fi.onclick=function(){loadFiles(item.path)}}else{var fe=item.name.split('.').pop().toLowerCase(),isImg=['jpg','jpeg','png','gif','bmp','svg','webp'].includes(fe),isMus=['mp3','wav','ogg','flac','m4a','aac'].includes(fe),isTxt=['txt','md','js','html','css','json','xml','yml','yaml','ini','log'].includes(fe),isVid=['mp4','webm','mov','avi','mkv'].includes(fe);var parsed=parsePartFile(item.name),isPart=!!parsed;var ab='';if(isTxt&&!isPart)ab='<button class="btn-small edit" onclick="event.stopPropagation();editFile(\''+item.path+'\',\''+item.name+'\')">编辑</button>';else if(isMus&&!isPart)ab='<button class="btn-small play" onclick="event.stopPropagation();previewFile(\''+item.path+'\',\''+item.name+'\',\'music\')">播放</button>';else if(isImg&&!isPart)ab='<button class="btn-small view" onclick="event.stopPropagation();previewFile(\''+item.path+'\',\''+item.name+'\',\'image\')">查看</button>';else if(isVid&&!isPart)ab='<button class="btn-small view" onclick="event.stopPropagation();previewFile(\''+item.path+'\',\''+item.name+'\',\'video\')">预览</button>';ab+='<button class="btn-small download" onclick="event.stopPropagation();smartDownload(\''+item.path+'\',\''+item.name+'\')">下载</button>';var sk=Math.round(item.size/1024*100)/100;var label=item.name;if(isPart){label+=' <span style="color:#fbbf24;font-size:10px">📦#'+parsed.index+'</span>';fi.style.borderLeft='3px solid #f59e0b'}fi.innerHTML='<div class="'+fc+'"></div><div class="file-name">'+label+'</div><div class="file-size">'+sk+' KB</div><div class="file-actions-small">'+ab+'<button class="btn-small delete" onclick="event.stopPropagation();deleteItem(\''+item.path+'\',false)">删除</button></div>';if(isTxt&&!isPart)fi.onclick=function(){editFile(item.path,item.name)};else if((isMus||isImg||isVid)&&!isPart)fi.onclick=function(){previewFile(item.path,item.name,isMus?'music':(isImg?'image':'video'))};else fi.onclick=function(){smartDownload(item.path,item.name)}}fl.appendChild(fi)})}catch(e){fl.innerHTML='<div class="file-item" style="text-align:center;color:var(--muted);justify-content:center"><span>加载失败: '+e.message+'</span></div>'}}
+
+async function previewFile(path,name,type){currentPreviewFile={path:path,name:name,type:type};try{var f=await githubApiRequest('contents/'+path);if(f&&f.download_url){document.getElementById('previewTitle').textContent='预览: '+name;document.getElementById('previewSection').style.display='block';document.getElementById('editorSection').style.display='none';var pc=document.getElementById('previewContent');if(type==='image')pc.innerHTML='<img src="'+f.download_url+'" class="preview-image"><p style="text-align:center;color:var(--muted)">'+name+'</p>';else if(type==='music')pc.innerHTML='<div class="audio-player"><audio controls><source src="'+f.download_url+'"></audio><div class="audio-info">🎵 '+name+'</div></div>';else if(type==='video')pc.innerHTML='<video controls style="max-width:100%;max-height:320px;display:block;margin:0 auto;border-radius:6px"><source src="'+f.download_url+'"></video><div style="text-align:center;color:var(--muted);margin-top:12px">🎬 '+name+'</div>'}}catch(e){alert('预览失败')}}
 function closePreview(){document.getElementById('previewSection').style.display='none';currentPreviewFile=null}
-function downloadCurrentFile(){if(currentPreviewFile)downloadFile(currentPreviewFile.path,currentPreviewFile.name)}
-async function downloadFile(path,name){try{var f=await githubApiRequest('contents/'+path);if(f&&f.download_url){var a=document.createElement('a');a.href=f.download_url;a.download=name;document.body.appendChild(a);a.click();a.remove()}}catch(e){alert('下载失败')}}
-
+function downloadCurrentFile(){if(currentPreviewFile)smartDownload(currentPreviewFile.path,currentPreviewFile.name)}
 function editFile(path,name){currentFile=path;document.getElementById('editorTitle').textContent='编辑: '+name;document.getElementById('editorSection').style.display='block';document.getElementById('previewSection').style.display='none';document.getElementById('fileContent').value='';loadFileContent(path)}
-async function loadFileContent(path){try{var f=await githubApiRequest('contents/'+path);if(f&&f.content)document.getElementById('fileContent').value=decodeBase64Content(f.content.replace(/\s/g,''))}catch(e){alert('读取失败')}}
+async function loadFileContent(path){try{var f=await githubApiRequest('contents/'+path);if(f&&f.content){var bs=atob(f.content.replace(/\s/g,''));document.getElementById('fileContent').value=new TextDecoder().decode(new Uint8Array(bs.split('').map(function(c){return c.charCodeAt(0)})))}}catch(e){alert('读取失败')}}
 function closeEditor(){document.getElementById('editorSection').style.display='none';currentFile=null}
-async function saveFile(){
-  if(!currentFile){alert('没有要保存的文件');return}
-  try{var fi=await githubApiRequest('contents/'+currentFile);var d={message:'更新 '+currentFile.split('/').pop(),content:btoa(unescape(encodeURIComponent(document.getElementById('fileContent').value))),sha:fi.sha,branch:'main'};
-  var r=await githubApiRequest('contents/'+currentFile,'PUT',d);if(r){showToast('✅ 保存成功');closeEditor();loadFiles(currentPath)}}catch(e){alert('保存失败')}
-}
-
+async function saveFile(){if(!currentFile){alert('没有要保存的文件');return}try{var fi=await githubApiRequest('contents/'+currentFile);var d={message:'更新 '+currentFile.split('/').pop(),content:btoa(unescape(encodeURIComponent(document.getElementById('fileContent').value))),sha:fi.sha,branch:'main'};var r=await githubApiRequest('contents/'+currentFile,'PUT',d);if(r){showToast('✅ 保存成功');closeEditor();loadFiles(currentPath)}}catch(e){alert('保存失败')}}
 function showCreateFolderModal(){showModal('folderModal')}
-async function createFolder(){
-  var n=document.getElementById('folderName').value.trim();if(!n){alert('输入文件夹名');return}
-  var fp=(currentPath?currentPath+'/':'')+n+'/.gitkeep';
-  try{var r=await githubApiRequest('contents/'+fp,'PUT',{message:'创建 '+n,content:btoa('# 空文件夹'),branch:'main'});if(r){showToast('📁 创建成功');closeModal('folderModal');loadFiles(currentPath)}}catch(e){alert('创建失败')}
-}
+async function createFolder(){var n=document.getElementById('folderName').value.trim();if(!n){alert('输入文件夹名');return}var fp=(currentPath?currentPath+'/':'')+n+'/.gitkeep';try{var r=await githubApiRequest('contents/'+fp,'PUT',{message:'创建 '+n,content:btoa('# 空文件夹'),branch:'main'});if(r){showToast('📁 创建成功');closeModal('folderModal');loadFiles(currentPath)}}catch(e){alert('创建失败')}}
 function showCreateFileModal(){showModal('fileModal')}
-async function createFile(){
-  var n=document.getElementById('fileName').value.trim();if(!n){alert('输入文件名');return}
-  var fp=(currentPath?currentPath+'/':'')+n;
-  try{var r=await githubApiRequest('contents/'+fp,'PUT',{message:'创建 '+n,content:btoa(unescape(encodeURIComponent('# '+n+'\n\n新文件'))),branch:'main'});if(r){showToast('📄 创建成功');closeModal('fileModal');loadFiles(currentPath)}}catch(e){alert('创建失败')}
-}
-async function deleteItem(path,isDir){
-  if(!confirm('删除 "'+path.split('/').pop()+'"? 不可恢复!'))return;
-  try{var fi=await githubApiRequest('contents/'+path);await githubApiRequest('contents/'+path,'DELETE',{message:'删除 '+path.split('/').pop(),sha:fi.sha,branch:'main'});showToast('🗑️ 已删除');loadFiles(currentPath)}catch(e){alert('删除失败')}
-}
+async function createFile(){var n=document.getElementById('fileName').value.trim();if(!n){alert('输入文件名');return}var fp=(currentPath?currentPath+'/':'')+n;try{var r=await githubApiRequest('contents/'+fp,'PUT',{message:'创建 '+n,content:btoa(unescape(encodeURIComponent('# '+n+'\n\n新文件'))),branch:'main'});if(r){showToast('📄 创建成功');closeModal('fileModal');loadFiles(currentPath)}}catch(e){alert('创建失败')}}
+async function deleteItem(path,isDir){if(!confirm('删除 "'+path.split('/').pop()+'"? 不可恢复!'))return;try{var fi=await githubApiRequest('contents/'+path);await githubApiRequest('contents/'+path,'DELETE',{message:'删除 '+path.split('/').pop(),sha:fi.sha,branch:'main'});showToast('🗑️ 已删除');loadFiles(currentPath)}catch(e){alert('删除失败')}}
 
 function handleDragOver(e){e.preventDefault();document.getElementById('uploadArea').classList.add('dragover')}
 function handleDragLeave(e){document.getElementById('uploadArea').classList.remove('dragover')}
 function handleDrop(e){e.preventDefault();document.getElementById('uploadArea').classList.remove('dragover');handleFiles(e.dataTransfer.files)}
 function handleFileSelect(e){handleFiles(e.target.files)}
-async function handleFiles(files){
-  var fl=document.getElementById('uploadFileList');fl.innerHTML='';fl.style.display='block';
-  for(var i=0;i<files.length;i++){var f=files[i],fi=document.createElement('div');fi.className='upload-file-item';fi.innerHTML='<span>📄 '+f.name+' ('+(f.size/1024).toFixed(2)+' KB)</span><span style="color:var(--accent-green)">⏳ 上传中...</span>';fl.appendChild(fi);
-  try{await uploadFile(f);fi.querySelector('span:last-child').textContent='✅ 完成'}catch(e){fi.querySelector('span:last-child').textContent='❌ 失败';fi.querySelector('span:last-child').style.color='var(--accent-red)'}}
-  setTimeout(function(){fl.style.display='none';loadFiles(currentPath)},2000)
-}
-async function uploadFile(file){
-  if(!document.getElementById('token').value)throw new Error('需要令牌');
-  return new Promise(function(resolve,reject){
-    var r=new FileReader();r.onload=async function(e){try{var c=btoa(new Uint8Array(e.target.result).reduce(function(d,b){return d+String.fromCharCode(b)},''));var res=await githubApiRequest('contents/'+(currentPath?currentPath+'/':'')+file.name,'PUT',{message:'上传 '+file.name,content:c,branch:'main'});if(res)resolve();else reject(new Error('失败'))}catch(err){reject(err)}};r.onerror=reject;r.readAsArrayBuffer(file)
-  })
-}
+async function handleFiles(files){var token=document.getElementById('token').value;if(!token){alert('请先输入令牌');return}for(var i=0;i<files.length;i++){var file=files[i];var filePath=currentPath?currentPath+'/'+file.name:file.name;if(file.size>CHUNK_SIZE){showToast('📦 大文件('+(file.size/1048576).toFixed(1)+'MB)，分片上传中...');try{await uploadFileInChunks(file,filePath)}catch(e){if(e.name!=='AbortError')showToast('❌ 上传失败')}}else{try{var content=await blobToBase64(file);await githubApiRequest('contents/'+filePath,'PUT',{message:'上传 '+file.name,content:content,branch:'main'});showToast('✅ '+file.name+' 上传成功')}catch(e){showToast('❌ '+file.name+' 上传失败')}}}loadFiles(currentPath)}
 
-// ╔══════════════════════════════════════════════════════╗
-// ║  🚀 初始化                                         ║
-// ╚══════════════════════════════════════════════════════╝
-document.addEventListener('DOMContentLoaded',function(){
-  loadConfig();lockAdminMode();
-  var ai=document.querySelector('.avatar-img'),af=document.querySelector('.avatar-fallback');
-  if(ai&&af){if(ai.complete){if(ai.naturalWidth===0)af.style.display='flex';else{ai.classList.add('loaded');af.style.display='none'}}else{ai.addEventListener('load',function(){this.classList.add('loaded');af.style.display='none'});ai.addEventListener('error',function(){this.style.display='none';af.style.display='flex'})}}
-  document.getElementById('uploadArea').addEventListener('click',function(){document.getElementById('fileInput').click()})
-});
+document.addEventListener('DOMContentLoaded',function(){loadConfig();lockAdminMode();var ai=document.querySelector('.avatar-img'),af=document.querySelector('.avatar-fallback');if(ai&&af){if(ai.complete){if(ai.naturalWidth===0)af.style.display='flex';else{ai.classList.add('loaded');af.style.display='none'}}else{ai.addEventListener('load',function(){this.classList.add('loaded');af.style.display='none'});ai.addEventListener('error',function(){this.style.display='none';af.style.display='flex'})}}document.getElementById('uploadArea').addEventListener('click',function(e){if(!e.target.closest('.upload-button')&&!e.target.closest('.upload-progress-area'))document.getElementById('fileInput').click()})});
 </script>
 </body>
 </html>
